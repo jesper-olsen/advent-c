@@ -150,6 +150,7 @@ typedef enum {
   SCORE, QUIT
 } action;
 
+// ANO_EXPLOSION1-3 are triggered by the context rather than by words; Their integer value is significant
 enum {
   MAGIC, HELP, TREE, DIG, LOST, ANO_EXPLOSION1, ANO_EXPLOSION2, MIST, FUCK, ANO_EXPLOSION3,
   STOP, INFO, SWIM
@@ -338,20 +339,16 @@ object obj;
 object oldobj;
 wordtype command_type;
 int turns;
-
 int west_count;
-
 bool was_dark;
 
 int interval = 5;
-const char pitch_dark_msg[] = "It is now pitch dark.  If you proceed you will "
-                              "most likely fall into a pit.";
+char const* const pitch_dark_msg = "It is now pitch dark.  If you proceed you will " "most likely fall into a pit.";
 
 int tally = 15;
 int lost_treasures;
 
 bool gave_up;
-
 int limit;
 
 char const*const incantation[] = {"fee", "fie", "foe", "foo", "fum"};
@@ -385,10 +382,9 @@ char const *const attack_msg[] = {[0] = "it misses",
 
 int clock1 = 15, clock2 = 30;
 bool panic, closed;
-
 bool warned;
-
 int death_count;
+
 constexpr int max_deaths = 3;
 char const *const death_wishes[2 * max_deaths] = {
     [0] =
@@ -479,54 +475,53 @@ static inline bool streq(const char *a, const char *b) {
 }
 
 void new_word(const char *word, int meaning) {
-  // rolling polynomial hash
-  int hash = 0;
-  for (const char *p = word; *p; p++)
-    hash = *p + hash + hash;
-  hash %= HASH_PRIME;
+    // rolling polynomial hash
+    int hash = 0;
+    for (const char *p = word; *p; p++)
+        hash = *p + hash + hash;
+    hash %= HASH_PRIME;
 
-  // linear probing
-  while (hash_table[hash].word_type) {
-    hash++;
-    if (hash == HASH_PRIME)
-      hash = 0;
-  }
-  strcpy(hash_table[hash].text, word);
-  hash_table[hash].word_type = current_type;
-  hash_table[hash].meaning = meaning;
+    // linear probing
+    while (hash_table[hash].word_type) {
+        hash++;
+        if (hash == HASH_PRIME)
+            hash = 0;
+    }
+    strcpy(hash_table[hash].text, word);
+    hash_table[hash].word_type = current_type;
+    hash_table[hash].meaning = meaning;
 }
 
 int lookup(char *w) {
-  int hash = 0;
-  char t;
-  t = w[5];
-  w[5] = '\0';
-  for (char *p = w; *p; p++)
-    hash = *p + hash + hash;
-  hash %= HASH_PRIME;
-  w[5] = t;
-  if (hash < 0)
+    int hash = 0;
+    char t = w[5];
+    w[5] = '\0';
+    for (char *p = w; *p; p++)
+        hash = *p + hash + hash;
+    hash %= HASH_PRIME;
+    w[5] = t;
+    if (hash < 0)
+        return -1;
+    while (hash_table[hash].word_type) {
+        if (streq(w, hash_table[hash].text))
+            return hash;
+        hash++;
+        if (hash == HASH_PRIME)
+            hash = 0;
+    }
     return -1;
-  while (hash_table[hash].word_type) {
-    if (streq(w, hash_table[hash].text))
-      return hash;
-    hash++;
-    if (hash == HASH_PRIME)
-      hash = 0;
-  }
-  return -1;
 }
 
 void drop(object t, location l) {
-  if (toting(t))
-    holding--;
-  place[t] = l;
-  if (l < 0)
-    holding++;
-  else if (l > 0) {
-    link[t] = first[l];
-    first[l] = t;
-  }
+    if (toting(t))
+        holding--;
+    place[t] = l;
+    if (l < 0)
+        holding++;
+    else if (l > 0) {
+        link[t] = first[l];
+        first[l] = t;
+    }
 }
 
 void carry(object t) {
@@ -982,7 +977,7 @@ int main() {
   new_word("infor", INFO);
   new_word("swim", SWIM),
 
-      q = travels;
+  q = travels;
   make_loc(
       road,
       "You are standing at the end of a road before a small brick building.\n\
@@ -2502,11 +2497,11 @@ on the underside of\nthe oyster.");
 
   oldoldloc = oldloc = loc = newloc = road;
 
-  while (1) {
+  while (true) {
     if (closing && newloc < min_in_cave && newloc != limbo) {
       {
         if (!panic)
-          clock2 = 15, panic = true;
+            clock2 = 15, panic = true;
         printf("A mysterious recorded voice groans into life and announces:\n\
 \"This exit is closed.  Please leave via main office.\"\n");
       }
@@ -2542,7 +2537,6 @@ on the underside of\nthe oyster.");
 axe at you, cursed, and ran away.  (The axe missed.)\n");
           drop(AXE, loc);
         }
-
       } else {
         dtotal = attack = stick = 0;
         for (j = 0; j <= nd; j++)
@@ -2689,7 +2683,7 @@ With that, he vanishes into the gloom.\n");
           printf("%s\n", p);
       }
     }
-    while (1) {
+    while (true) {
       verb = oldverb = ABSTAIN;
       oldobj = obj;
       obj = NOTHING;
