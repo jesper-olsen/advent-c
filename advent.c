@@ -10,17 +10,8 @@ constexpr int HASH_PRIME = 1009;
 #define min_lower_loc emist
 #define min_forced_loc crack
 #define max_spec troll
-#define lighted 1
-#define oil 2
-#define liquid 4
-#define cave_hint 8
-#define bird_hint 16
-#define snake_hint 32
-#define twist_hint 64
-#define dark_hint 128
-#define witt_hint 256
 #define travel_size 740
-#define rem_size 15
+#define REM_SIZE 15
 #define make_loc(x, l, s, f)                                                   \
   {                                                                            \
     long_desc[x] = l;                                                          \
@@ -45,7 +36,7 @@ constexpr int HASH_PRIME = 1009;
 #define holds(o) (100 + (o))
 #define sees(o) (200 + (o))
 #define not(o, k) (300 + (o) + 100 * (k))
-#define sayit (max_spec + rem_size)
+#define sayit (max_spec + REM_SIZE)
 #define twist(l, n, s, e, w, ne, se, nw, sw, u, d, m)                          \
   make_loc(l, m, 0, 0);                                                        \
   make_inst(N, 0, n);                                                          \
@@ -104,6 +95,18 @@ constexpr int HASH_PRIME = 1009;
 #define closing (clock1 < 0)
 constexpr int MAX_SCORE = 350;
 constexpr int HIGHEST_CLASS = 8;
+
+typedef enum {
+    lighted = 1<<0,
+    oil     = 1<<1,
+    liquid  = 1<<2,
+    cave_hint = 1<<3,
+    bird_hint = 1<<4,
+    snake_hint = 1<<5,
+    twist_hint = 1<<6,
+    dark_hint = 1<<7,
+    witt_hint = 1<<8,
+} BitFlags;
 
 typedef enum {
   no_type,
@@ -301,7 +304,7 @@ instruction *start[MAX_LOC + 2];
 const char *long_desc[MAX_LOC + 1];
 const char *short_desc[MAX_LOC + 1];
 int flags[MAX_LOC + 1];
-char const* const remarks[rem_size] = {
+char const* const remarks[REM_SIZE] = {
     [1] = "You don't fit through a two-inch slit!",
     [2] = "You can't go through a locked steel grate!",
     [3] = "I respectfully suggest you go across the bridge instead of jumping.",
