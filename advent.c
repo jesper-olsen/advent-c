@@ -45,8 +45,7 @@ constexpr int HASH_PRIME = 1009;
 #define holds(o) (100 + (o))
 #define sees(o) (200 + (o))
 #define not(o, k) (300 + (o) + 100 * (k))
-#define remark(m) remarks[++rem_count] = m
-#define sayit (max_spec + rem_count)
+#define sayit (max_spec + rem_size)
 #define twist(l, n, s, e, w, ne, se, nw, sw, u, d, m)                          \
   make_loc(l, m, 0, 0);                                                        \
   make_inst(N, 0, n);                                                          \
@@ -302,8 +301,24 @@ instruction *start[MAX_LOC + 2];
 const char *long_desc[MAX_LOC + 1];
 const char *short_desc[MAX_LOC + 1];
 int flags[MAX_LOC + 1];
-const char *remarks[rem_size];
-int rem_count;
+char const* const remarks[rem_size] = {
+    [1] = "You don't fit through a two-inch slit!",
+    [2] = "You can't go through a locked steel grate!",
+    [3] = "I respectfully suggest you go across the bridge instead of jumping.",
+    [4] = "There is no way across the fissure.",
+    [5] = "You can't fit this five-foot clam through that little passage!",
+    [6] = "You can't fit this five-foot oyster through that little passage!",
+    [7] = "You have crawled around in some little holes and wound up back in the\n\
+main passage.",
+    [8] = "You have crawled around in some little holes and found your way\n\
+blocked by a recent cave-in.  You are now back in the main passage.",
+    [9] = "It is too far up for you to reach.",
+    [10] = "The door is extremely rusty and refuses to open.",
+    [11] = "The dragon looks rather nasty.  You'd best not try to get by.",
+    [12] = "The troll refuses to let you cross.",
+    [13] = "There is no longer any way across the chasm.",
+    [14] = default_msg[EAT],
+};
 int visits[MAX_LOC + 1];
 
 char const *const all_alike =
@@ -1080,7 +1095,6 @@ in the rock.  Downstream the streambed is bare rock.",
   ditto(ROCK);
   ditto(BED);
   ditto(S);
-  remark("You don't fit through a two-inch slit!");
   make_inst(SLIT, 0, sayit);
   ditto(STREAM);
   ditto(D);
@@ -1104,7 +1118,6 @@ leads into the depression.",
   ditto(ENTER);
   ditto(IN);
   ditto(D);
-  remark("You can't go through a locked steel grate!");
   grate_rmk = sayit;
   make_inst(ENTER, 0, sayit);
 
@@ -1243,11 +1256,9 @@ The mist is quite thick here, and the fissure is too wide to jump.",
       "You're on east bank of fissure.", 0);
   make_inst(HALL, 0, emist);
   ditto(E);
-  remark("I respectfully suggest you go across the bridge instead of jumping.");
   bridge_rmk = sayit;
   make_inst(JUMP, not(CRYSTAL, 0), sayit);
   make_inst(FORWARD, not(CRYSTAL, 1), lose);
-  remark("There is no way across the fissure.");
   make_inst(OVER, not(CRYSTAL, 1), sayit);
   ditto(ACROSS);
   ditto(W);
@@ -1610,9 +1621,7 @@ leads up.  A low hands-and-knees passage enters from the south.",
   make_inst(U, 0, arch);
   ditto(HALL);
   make_inst(D, 0, ragged);
-  remark("You can't fit this five-foot clam through that little passage!");
   make_inst(S, holds(CLAM), sayit);
-  remark("You can't fit this five-foot oyster through that little passage!");
   make_inst(S, holds(OYSTER), sayit);
   make_inst(S, 0, complex);
 
@@ -1650,9 +1659,6 @@ PROCEED AT OWN RISK.  [WITT CONSTRUCTION COMPANY]\"",
   make_loc(witt,
            "You are at Witt's End.  Passages lead off in \"all\" directions.",
            "You're at Witt's End.", witt_hint);
-  remark(
-      "You have crawled around in some little holes and wound up back in the\n\
-main passage.");
   loop_rmk = sayit;
   make_inst(E, 95, sayit);
   ditto(N);
@@ -1664,8 +1670,6 @@ main passage.");
   ditto(U);
   ditto(D);
   make_inst(E, 0, ante);
-  remark("You have crawled around in some little holes and found your way\n\
-blocked by a recent cave-in.  You are now back in the main passage.");
   make_inst(W, 0, sayit);
 
   make_loc(
@@ -1732,7 +1736,6 @@ the wall above the pit at this end of the room.",
   ditto(SLAB);
   make_inst(D, 0, wpit);
   ditto(PIT);
-  remark("It is too far up for you to reach.");
   make_inst(HOLE, 0, sayit);
 
   make_loc(
@@ -1788,7 +1791,6 @@ the west wall is scrawled the inscription, \"FEE FIE FOE FOO\" [sic].",
   make_inst(N, not(DOOR, 0), falls);
   ditto(ENTER);
   ditto(CAVERN);
-  remark("The door is extremely rusty and refuses to open.");
   make_inst(N, 0, sayit);
 
   make_loc(
@@ -1979,7 +1981,6 @@ mist.  The only passage goes back toward the south.",
            0);
   make_inst(N, 0, abover);
   ditto(OUT);
-  remark("The dragon looks rather nasty.  You'd best not try to get by.");
   make_inst(E, 0, sayit);
   ditto(FORWARD);
 
@@ -2040,12 +2041,10 @@ up from below obscures all view of the far side.  A SW path leads away\n\
 from the chasm into a winding corridor.",
       "You're on SW side of chasm.", 0);
   make_inst(SW, 0, scorr);
-  remark("The troll refuses to let you cross.");
   make_inst(OVER, sees(TROLL), sayit);
   ditto(ACROSS);
   ditto(CROSS);
   ditto(NE);
-  remark("There is no longer any way across the chasm.");
   make_inst(OVER, not(BRIDGE, 0), sayit);
   make_inst(OVER, 0, troll);
   make_inst(JUMP, not(BRIDGE, 0), lose);
@@ -2178,7 +2177,6 @@ hellish scene.  A dark, foreboding passage exits to the south.",
   ditto(PASSAGE);
   ditto(OUT);
   make_inst(FORK, 0, fork);
-  remark(default_msg[EAT]);
   make_inst(D, 0, sayit);
   ditto(JUMP);
 
@@ -2313,7 +2311,7 @@ It would be advisable to use the exit.",
   make_inst(FORCE, 0, w2pit);
 
   start[ppass] = q;
-  if (q > &travels[travel_size] || rem_count > rem_size) {
+  if (q > &travels[travel_size]) {
     printf("Oops, I'm broken!\n");
     exit(-1);
   }
