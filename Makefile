@@ -21,7 +21,7 @@ $(TARGET): $(SRC)
 run: $(TARGET)
 	./$(TARGET)
 
-format:
+fmt:
 	@echo "Formatting source files..."
 	$(ASTYLE) $(SRC)
 

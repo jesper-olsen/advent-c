@@ -5,11 +5,6 @@
 #include <time.h>
 
 constexpr int HASH_PRIME = 1009;
-#define ok default_msg[RELAX]
-#define min_in_cave inside
-#define min_lower_loc emist
-#define min_forced_loc crack
-#define max_spec troll
 #define travel_size 740
 #define REM_SIZE 15
 #define make_loc(x, l, s, f)                                                   \
@@ -160,6 +155,9 @@ enum {
     STOP, INFO, SWIM
 } MessageTriggers;
 
+char const* const pitch_dark_msg = "It is now pitch dark.  If you proceed you will " "most likely fall into a pit.";
+const char* const ok = "OK.";
+
 char const *const message[13] = {
     [MAGIC] = "Good try, but that is an old worn-out magic word.",
     [HELP] = "I know of places, actions, and things.  Most of my vocabulary\n\
@@ -243,7 +241,7 @@ char const *const default_msg[] = {
     [WAVE] = "Nothing happens.",
     [CALM] = "I'm game.  Would you care to explain how?",
     [GO] = "Where?",
-    [RELAX] = "OK.",
+    [RELAX] = ok,
     [DROP] = "You aren't carrying it!",
     [TOSS] = "You aren't carrying it!",
     [POUR] = "You aren't carrying it!",
@@ -292,6 +290,10 @@ typedef enum {
 
 constexpr int MAX_LOC = didit;
 constexpr int max_pirate_loc = dead2;
+constexpr int min_in_cave = inside;
+constexpr int min_lower_loc = emist;
+constexpr int min_forced_loc = crack;
+constexpr int max_spec = troll;
 
 typedef struct {
     motion mot;
@@ -366,8 +368,6 @@ int west_count;
 bool was_dark;
 
 int interval = 5;
-char const* const pitch_dark_msg = "It is now pitch dark.  If you proceed you will " "most likely fall into a pit.";
-
 int tally = 15;
 int lost_treasures;
 
@@ -449,37 +449,33 @@ read it.  Should I go ahead and read it anyway?",
     [7] = "Do you need help getting out of here?"
 };
 
-char const *const hint[n_hints] = {
-    [0] =
-    "Somewhere nearby is Colossal Cave, where others have found fortunes in\n\
-treasure and gold, though it is rumored that some who enter are never\n\
-seen again.  Magic is said to work in the cave.  I will be your eyes\n\
-and hands.  Direct me with commands of one or two words.  I should\n\
-warn you that I look at only the first five letters of each word, so\n\
-you'll have to enter \"NORTHEAST\" as \"NE\" to distinguish it from\n\
-\"NORTH\".  Should you get stuck, type \"HELP\" for some general hints.\n\
-For information on how to end your adventure, etc., type \"INFO\".\n\
-                        -  -  -\n\
-The first adventure program was developed by Willie Crowther.\n\
-Most of the features of the current program were added by Don Woods;\n\
-all of its bugs were added by Don Knuth.",
-    [1] =
-    "It says, \"There is something strange about this place, such that one\n\
-of the words I've always known now has a new effect.\"",
-    [2] = "The grate is very solid and has a hardened steel lock.  You cannot\n\
-enter without a key, and there are no keys in sight.  I would recommend\n\
-looking elsewhere for the keys.",
-    [3] = "Something seems to be frightening the bird just now and you cannot\n\
-catch it no matter what you try.  Perhaps you might try later.",
-    [4] =
-    "You can't kill the snake, or drive it away, or avoid it, or anything\n\
-like that.  There is a way to get by, but you don't have the necessary\n\
-resources right now.",
+char const* const hint[n_hints] = {
+    [0] = "Somewhere nearby is Colossal Cave, where others have found fortunes in\n"
+          "treasure and gold, though it is rumored that some who enter are never\n"
+          "seen again.  Magic is said to work in the cave.  I will be your eyes\n"
+          "and hands.  Direct me with commands of one or two words.  I should\n"
+          "warn you that I look at only the first five letters of each word, so\n"
+          "you'll have to enter \"NORTHEAST\" as \"NE\" to distinguish it from\n"
+          "\"NORTH\".  Should you get stuck, type \"HELP\" for some general hints.\n"
+          "For information on how to end your adventure, etc., type \"INFO\".\n"
+          "                            -  -  -\n"
+          "The first adventure program was developed by Willie Crowther.\n"
+          "Most of the features of the current program were added by Don Woods;\n"
+          "all of its bugs were added by Don Knuth.",
+    [1] = "It says, \"There is something strange about this place, such that one\n"
+          "of the words I've always known now has a new effect.\"",
+    [2] = "The grate is very solid and has a hardened steel lock.  You cannot\n"
+          "enter without a key, and there are no keys in sight.  I would recommend\n"
+          "looking elsewhere for the keys.",
+    [3] = "Something seems to be frightening the bird just now and you cannot\n"
+          "catch it no matter what you try.  Perhaps you might try later.",
+    [4] = "You can't kill the snake, or drive it away, or avoid it, or anything\n"
+          "like that.  There is a way to get by, but you don't have the necessary\n"
+          "resources right now.",
     [5] = "You can make the passages look less alike by dropping things.",
-    [6] =
-    "There is a way to explore that region without having to worry about\n\
-falling into a pit.  None of the objects available is immediately\n\
-useful for discovering the secret.",
+    [6] = "There is a way to explore that region without having to worry about\n"
+          "falling into a pit.  None of the objects available is immediately\n"
+          "useful for discovering the secret.",
     [7] = "Don't go west."
 };
 bool hinted[n_hints];
