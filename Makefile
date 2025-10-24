@@ -4,6 +4,8 @@
 CC      := clang
 CFLAGS  := -std=c23 -Wall -Wextra -Wno-switch-enum -Wno-deprecated-non-prototype -O2
 
+ASTYLE = astyle --suffix=none
+
 # Source and target
 SRC     := advent.c
 TARGET  := advent
@@ -19,9 +21,13 @@ $(TARGET): $(SRC)
 run: $(TARGET)
 	./$(TARGET)
 
+format:
+	@echo "Formatting source files..."
+	$(ASTYLE) $(SRC)
+
 # Clean up
 clean:
 	rm -f $(TARGET) *.o
 
-.PHONY: all run clean
+.PHONY: all run clean format
 
