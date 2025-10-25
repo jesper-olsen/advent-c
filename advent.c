@@ -2500,13 +2500,13 @@ on the underside of\nthe oyster.");
             {
                 if (!panic)
                     clock2 = 15, panic = true;
-                printf("A mysterious recorded voice groans into life and announces:\n\
-\"This exit is closed.  Please leave via main office.\"\n");
+                printf("A mysterious recorded voice groans into life and announces:\n"
+                       "\"This exit is closed.  Please leave via main office.\"\n");
             }
             newloc = loc;
         } else if (newloc != loc)
             if (loc <= max_pirate_loc) {
-                for (j = 1; j <= nd; j++)
+                for (size_t j = 1; j <= nd; j++)
                     if (odloc[j] == newloc && dseen[j]) {
                         printf("A little dwarf with a big knife blocks your way.\n");
                         newloc = loc;
@@ -2761,9 +2761,8 @@ pre_parse:
             if (tally == 0 && loc >= min_lower_loc && loc != y2)
                 clock1--;
             if (clock1 == 0) {
-                printf(
-                    "A sepulchral voice, reverberating through the cave, says, \"Cave\n\
-closing soon.  All adventurers exit immediately through main office.\"\n");
+                printf("A sepulchral voice, reverberating through the cave, says, \"Cave\n"
+                        "closing soon.  All adventurers exit immediately through main office.\"\n");
                 clock1 = -1;
                 prop[GRATE] = 0;
                 prop[CRYSTAL] = 0;
@@ -2785,10 +2784,10 @@ closing soon.  All adventurers exit immediately through main office.\"\n");
                 if (clock1 < 0)
                     clock2--;
                 if (clock2 == 0) {
-                    printf("The sepulchral voice intones, \
-\"The cave is now closed.\"  As the echoes\n\
-fade, there is a blinding flash of light (and a small puff of orange\n\
-smoke). . . .    Then your eyes refocus; you look around and find...\n");
+                    printf("The sepulchral voice intones, "
+                           "\"The cave is now closed.\"  As the echoes\n"
+                           "fade, there is a blinding flash of light (and a small puff of orange\n"
+                           "smoke). . . .    Then your eyes refocus; you look around and find...\n");
                     move(BOTTLE, neend);
                     prop[BOTTLE] = -2;
                     move(PLANT, neend);
@@ -2829,9 +2828,8 @@ smoke). . . .    Then your eyes refocus; you look around and find...\n");
                         limit--;
                     if (limit <= 30 && here(BATTERIES) && prop[BATTERIES] == 0 &&
                             here(LAMP)) {
-                        printf(
-                            "Your lamp is getting dim.  I'm taking the liberty of replacing\n\
-the batteries.\n");
+                        printf("Your lamp is getting dim.  I'm taking the liberty of replacing\n"
+                               "the batteries.\n");
                         prop[BATTERIES] = 1;
                         if (toting(BATTERIES))
                             drop(BATTERIES, loc);
@@ -2845,18 +2843,18 @@ the batteries.\n");
                             printf("Your lamp has run out of power.");
                     } else if (limit < 0 && loc < min_in_cave) {
                         printf(
-                            "There's not much point in wandering around out here, and you can't\n\
-explore the cave without a lamp.  So let's just call it a day.\n");
+                            "There's not much point in wandering around out here, and you can't\n"
+                            "explore the cave without a lamp.  So let's just call it a day.\n");
                         goto give_up;
                     } else if (limit <= 30 && !warned && here(LAMP)) {
                         printf("Your lamp is getting dim");
                         if (prop[BATTERIES] == 1)
-                            printf(", and you're out of spare batteries.  You'd\n\
-best start wrapping this up.\n");
+                            printf(", and you're out of spare batteries.  You'd\n"
+                                   "best start wrapping this up.\n");
                         else if (place[BATTERIES] == limbo)
-                            printf(".  You'd best start wrapping this up, unless\n\
-you can find some fresh batteries.  I seem to recall that there's\n\
-a vending machine in the maze.  Bring some coins with you.\n");
+                            printf(".  You'd best start wrapping this up, unless\n"
+                                   "you can find some fresh batteries.  I seem to recall that there's\n"
+                                   "a vending machine in the maze.  Bring some coins with you.\n");
                         else
                             printf(".  You'd best go back for those batteries.\n");
                         warned = true;
@@ -3058,13 +3056,12 @@ intransitive:
             case BRIEF:
                 interval = 10000;
                 look_count = 3;
-                report(
-                    "Okay, from now on I'll only describe a place in full the first time\n\
-you come to it.  To get the full description, say \"LOOK\".");
+                report("Okay, from now on I'll only describe a place in full the first time\n"
+                       "you come to it.  To get the full description, say \"LOOK\".");
 
             case SCORE:
-                printf("If you were to quit now, you would score %d\n\
-out of a possible %d.\n",
+                printf("If you were to quit now, you would score %d\n"
+                       "out of a possible %d.\n",
                        score() - 4, MAX_SCORE);
                 if (!yes("Do you indeed wish to quit now?", ok, ok))
                     continue;
@@ -3186,18 +3183,18 @@ smash:
                 } else if (obj != MIRROR)
                     goto report_default;
                 if (closed) {
-                    printf("You strike the mirror a resounding blow, whereupon \
-it shatters into a\n\
-myriad tiny fragments.");
+                    printf("You strike the mirror a resounding blow, whereupon "
+                           "it shatters into a\n"
+                           "myriad tiny fragments.");
                     goto dwarves_upset;
                 }
                 report("It is too far up for you to reach.");
 
             case WAKE:
                 if (closed && obj == DWARF) {
-                    printf("You prod the nearest dwarf, who wakes up grumpily, \
-takes one look at\n\
-you, curses, and grabs for his axe.\n");
+                    printf("You prod the nearest dwarf, who wakes up grumpily, "
+                           "takes one look at\n"
+                           "you, curses, and grabs for his axe.\n");
                     goto dwarves_upset;
                 } else
                     goto report_default;
@@ -3247,8 +3244,8 @@ you, curses, and grabs for his axe.\n");
                 place[obj] = limbo;
                 if (loc == place[PLANT]) {
                     if (obj != WATER)
-                        report("The plant indignantly shakes the oil off its leaves \
-and asks, \"Water?\"");
+                        report("The plant indignantly shakes the oil off its leaves "
+                               "and asks, \"Water?\"");
                     printf("%s\n", note[prop[PLANT] + 1 + offset[PLANT]]);
                     prop[PLANT] += 2;
                     if (prop[PLANT] > 4)
@@ -3325,9 +3322,9 @@ and asks, \"Water?\"");
                            "something first.");
                 if (obj == BIRD && prop[BIRD] == 0) {
                     if (toting(ROD))
-                        report("The bird was unafraid when you entered, \
-but as you approach it becomes\n\
-disturbed and you cannot catch it.");
+                        report("The bird was unafraid when you entered, "
+                               "but as you approach it becomes\n"
+                               "disturbed and you cannot catch it.");
                     if (toting(CAGE))
                         prop[BIRD] = 1;
                     else
@@ -3352,9 +3349,9 @@ disturbed and you cannot catch it.");
                 }
                 if (obj == BIRD) {
                     if (here(SNAKE)) {
-                        printf("The little bird attacks the green snake, \
-and in an astounding flurry\n\
-drives the snake away.\n");
+                        printf("The little bird attacks the green snake, "
+                               "and in an astounding flurry\n"
+                               "drives the snake away.\n");
                         k = 1;
                         if (closed)
                             goto dwarves_upset;
@@ -3365,9 +3362,9 @@ drives the snake away.\n");
                         prop[BIRD] = 0;
                         if (place[SNAKE] == hmk)
                             lost_treasures++;
-                        report("The little bird attacks the green dragon, \
-and in an astounding flurry\n\
-gets burnt to a cinder.  The ashes blow away.");
+                        report("The little bird attacks the green dragon, "
+                               "and in an astounding flurry\n"
+                               "gets burnt to a cinder.  The ashes blow away.");
                     }
                 }
 
@@ -3379,9 +3376,9 @@ gets burnt to a cinder.  The ashes blow away.");
                         base[VASE] = VASE;
                 }
                 if (obj == BEAR && is_at_loc(TROLL)) {
-                    printf("The bear lumbers toward the troll, \
-who lets out a startled shriek and\n\
-scurries away.  The bear soon gives up the pursuit and wanders back.\n");
+                    printf("The bear lumbers toward the troll, "
+                           "who lets out a startled shriek and\n"
+                           "scurries away.  The bear soon gives up the pursuit and wanders back.\n");
                     k = 1;
                     destroy(TROLL);
                     destroy(TROLL_);
@@ -3418,8 +3415,7 @@ scurries away.  The bear soon gives up the pursuit and wanders back.\n");
                     drop(TROLL2_, neside);
                     move(BRIDGE, swside);
                     move(BRIDGE_, neside);
-                    report("The troll catches your treasure and scurries away out of "
-                           "sight.");
+                    report("The troll catches your treasure and scurries away out of sight.");
                 }
 
                 if (obj == FOOD && here(BEAR)) {
@@ -3437,14 +3433,12 @@ scurries away.  The bear soon gives up the pursuit and wanders back.\n");
                         dseen[j] = 0;
                         dkill++;
                         if (dkill == 1)
-                            printf("You killed a little dwarf.  The body \
-vanishes in a cloud of greasy\n\
-black smoke.\n");
+                            printf("You killed a little dwarf.  The body vanishes in a cloud of greasy\n"
+                                   "black smoke.\n");
                         else
                             printf("You killed a little dwarf.\n");
                     } else
-                        printf(
-                            "You attack a little dwarf, but he dodges out of the way.\n");
+                        printf("You attack a little dwarf, but he dodges out of the way.\n");
                     drop(AXE, loc);
                     stay_put;
                 }
@@ -3452,17 +3446,16 @@ black smoke.\n");
                 if (is_at_loc(DRAGON) && prop[DRAGON] == 0)
                     printf("The axe bounces harmlessly off the dragon's thick scales.\n");
                 else if (is_at_loc(TROLL))
-                    printf("The troll deftly catches the axe, examines it carefully, \
-and tosses it\n\
-back, declaring, \"Good workmanship, but it's not valuable enough.\"\n");
+                    printf("The troll deftly catches the axe, examines it carefully, "
+                           "and tosses it\n"
+                           "back, declaring, \"Good workmanship, but it's not valuable enough.\"\n");
                 else if (here(BEAR) && prop[BEAR] == 0) {
                     drop(AXE, loc);
                     prop[AXE] = 1;
                     base[AXE] = AXE;
                     if (place[BEAR] == loc)
                         move(BEAR, loc);
-                    report("The axe misses and lands near the bear where you can't get "
-                           "at it.");
+                    report("The axe misses and lands near the bear where you can't get at it.");
                 } else {
                     obj = NOTHING;
                     change_to(KILL);
@@ -3542,9 +3535,9 @@ cry:
                         goto dwarves_upset;
                     report("With what?  Your bare hands?");
                 case TROLL:
-                    report("Trolls are close relatives with the rocks \
-and have skin as tough as\n\
-a rhinoceros hide.  The troll fends off your blows effortlessly.");
+                    report("Trolls are close relatives with the rocks "
+                           "and have skin as tough as\n"
+                           "a rhinoceros hide.  The troll fends off your blows effortlessly.");
                 case BEAR:
                     switch (prop[BEAR]) {
                     case 0:
@@ -3561,12 +3554,10 @@ a rhinoceros hide.  The troll fends off your blows effortlessly.");
             case FEED:
                 switch (obj) {
                 case BIRD:
-                    report("It's not hungry (it's merely pinin' for the fjords).  \
-Besides, you\n\
-have no bird seed.");
+                    report("It's not hungry (it's merely pinin' for the fjords).  Besides, you\n"
+                           "have no bird seed.");
                 case TROLL:
-                    report("Gluttony is not one of the troll's vices.  Avarice, however, "
-                           "is.");
+                    report("Gluttony is not one of the troll's vices.  Avarice, however, is.");
                 case DRAGON:
                     if (prop[DRAGON])
                         report(default_msg[EAT]);
@@ -3590,15 +3581,13 @@ have no bird seed.");
                     prop[BEAR] = 1;
                     prop[AXE] = 0;
                     base[AXE] = NOTHING;
-                    report("The bear eagerly wolfs down your food, \
-after which he seems to calm\n\
-down considerably and even becomes rather friendly.");
+                    report("The bear eagerly wolfs down your food, after which he seems to calm\n"
+                           "down considerably and even becomes rather friendly.");
                 case DWARF:
                     if (!here(FOOD))
                         goto report_default;
                     dflag++;
-                    report("You fool, dwarves eat only coal!  Now you've made him REALLY "
-                           "mad!");
+                    report("You fool, dwarves eat only coal!  Now you've made him REALLY mad!");
                 default:
                     report(default_msg[CALM]);
                 }
@@ -3626,13 +3615,13 @@ down considerably and even becomes rather friendly.");
                         drop(OYSTER, loc);
                         drop(PEARL, sac);
                         report(
-                            "A glistening pearl falls out of the clam and rolls away.  Goodness,\n\
-this must really be an oyster.  (I never was very good at identifying\n\
-bivalves.)  Whatever it is, it has now snapped shut again.");
+                            "A glistening pearl falls out of the clam and rolls away.  Goodness,\n"
+                            "this must really be an oyster.  (I never was very good at identifying\n"
+                            "bivalves.)  Whatever it is, it has now snapped shut again.");
                     } else
                         report(
-                            "The oyster creaks open, revealing nothing but oyster inside.\n\
-It promptly snaps shut again.");
+                            "The oyster creaks open, revealing nothing but oyster inside.\n"
+                            "It promptly snaps shut again.");
 
                 case GRATE:
                 case CHAIN:
@@ -3643,9 +3632,9 @@ It promptly snaps shut again.");
                             if (prop[CHAIN] == 0)
                                 report("It was already unlocked.");
                             if (prop[BEAR] == 0)
-                                report("There is no way to get past the bear \
-to unlock the chain, which is\n\
-probably just as well.");
+                                report("There is no way to get past the bear "
+                                       "to unlock the chain, which is\n"
+                                       "probably just as well.");
                             prop[CHAIN] = 0, base[CHAIN] = NOTHING;
                             if (prop[BEAR] == 3)
                                 base[BEAR] = BEAR;
@@ -3668,8 +3657,8 @@ probably just as well.");
                             if (!panic)
                                 clock2 = 15, panic = true;
                             printf(
-                                "A mysterious recorded voice groans into life and announces:\n\
-\"This exit is closed.  Please leave via main office.\"\n");
+                                "A mysterious recorded voice groans into life and announces:\n"
+                                "\"This exit is closed.  Please leave via main office.\"\n");
                         }
                         continue;
                     }
@@ -3769,9 +3758,8 @@ found:
         }
         if (mot == LOOK) {
             if (++look_count <= 3)
-                printf("Sorry, but I am not allowed to give \
-more detail.  I will repeat the\n\
-long description of your location.\n");
+                printf("Sorry, but I am not allowed to give more detail.  I will repeat the\n"
+                       "long description of your location.\n");
             was_dark = false;
             visits[loc] = 0;
             continue;
@@ -3780,8 +3768,8 @@ long description of your location.\n");
         if (mot == CAVE) {
             if (loc < min_in_cave)
                 printf(
-                    "I can't see where the cave is, but hereabouts no stream can run on\n\
-the surface for long.  I would try the stream.\n");
+                    "I can't see where the cave is, but hereabouts no stream can run on\n"
+                    "the surface for long.  I would try the stream.\n");
             else
                 printf("I need more detailed instructions to do that.\n");
             continue;
@@ -3805,15 +3793,13 @@ go_for_it:
                 switch (mot) {
                 case IN:
                 case OUT:
-                    printf("I don't know in from out here.  \
-Use compass points or name something\n\
-in the general direction you want to go.");
+                    printf("I don't know in from out here.  Use compass points or name something\n"
+                           "in the general direction you want to go.");
                     break;
                 case FORWARD:
                 case L:
                 case R:
-                    printf("I am unsure how you are facing.  \
-Use compass points or nearby objects.");
+                    printf("I am unsure how you are facing.  Use compass points or nearby objects.");
                     break;
                 default:
                     printf("There is no way to go in that direction.");
@@ -3855,8 +3841,8 @@ stay:
                 continue;
             } else {
                 printf(
-                    "Something you're carrying won't fit through the tunnel with you.\n\
-You'd best take inventory and drop something.\n");
+                    "Something you're carrying won't fit through the tunnel with you.\n"
+                    "You'd best take inventory and drop something.\n");
                 goto stay;
             }
         case pdrop:
@@ -3880,10 +3866,10 @@ You'd best take inventory and drop something.\n");
             if (!toting(BEAR))
                 continue;
             printf(
-                "Just as you reach the other side, the bridge buckles beneath the\n\
-weight of the bear, who was still following you around.  You\n\
-scrabble desperately for support, but as the bridge collapses you\n\
-stumble back and fall into the chasm.\n");
+                "Just as you reach the other side, the bridge buckles beneath the\n"
+                "weight of the bear, who was still following you around.  You\n"
+                "scrabble desperately for support, but as the bridge collapses you\n"
+                "stumble back and fall into the chasm.\n");
             prop[BRIDGE] = 1;
             prop[TROLL] = 2;
             drop(BEAR, newloc);
@@ -3908,8 +3894,8 @@ death:
     death_count++;
     if (closing) {
         printf(
-            "It looks as though you're dead.  Well, seeing as how it's so close\n\
-to closing time anyway, let's just call it a day.\n");
+            "It looks as though you're dead.  Well, seeing as how it's so close\n"
+            "to closing time anyway, let's just call it a day.\n");
         goto quit;
     }
     if (!yes(death_wishes[2 * death_count - 2], death_wishes[2 * death_count - 1],
@@ -3928,10 +3914,9 @@ to closing time anyway, let's just call it a day.\n");
     goto commence;
 
 dwarves_upset:
-    printf("The resulting ruckus has awakened \
-the dwarves.  There are now several\n\
-threatening little dwarves in the room with you!  Most of them throw\n\
-knives at you!  All of them get you!\n");
+    printf("The resulting ruckus has awakened the dwarves.  There are now several\n"
+           "threatening little dwarves in the room with you!  Most of them throw\n"
+           "knives at you!  All of them get you!\n");
 
 quit:
     k = score();
