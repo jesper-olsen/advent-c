@@ -155,79 +155,72 @@ enum {
     STOP, INFO, SWIM
 } MessageTriggers;
 
-char const* const pitch_dark_msg = "It is now pitch dark.  If you proceed you will " "most likely fall into a pit.";
+char const* const pitch_dark_msg = "It is now pitch dark.  If you proceed you will most likely fall into a pit.";
 const char* const ok = "OK.";
 
 char const *const message[13] = {
     [MAGIC] = "Good try, but that is an old worn-out magic word.",
-    [HELP] = "I know of places, actions, and things.  Most of my vocabulary\n\
-describes places and is used to move you there.  To move, try words\n\
-like forest, building, downstream, enter, east, west, north, south,\n\
-up, or down.  I know about a few special objects, like a black rod\n\
-hidden in the cave.  These objects can be manipulated using some of\n\
-the action words that I know.  Usually you will need to give both the\n\
-object and action words (in either order), but sometimes I can infer\n\
-the object from the verb alone.  Some objects also imply verbs; in\n\
-particular, \"inventory\" implies \"take inventory\", which causes me to\n\
-give you a list of what you're carrying.  The objects have side\n\
-effects; for instance, the rod scares the bird.  Usually people having\n\
-trouble moving just need to try a few more words.  Usually people\n\
-trying unsuccessfully to manipulate an object are attempting something\n\
-beyond their (or my!) capabilities and should try a completely\n\
-different tack.  To speed the game you can sometimes move long\n\
-distances with a single word.  For example, \"building\" usually gets\n\
-you to the building from anywhere above ground except when lost in the\n\
-forest.  Also, note that cave passages turn a lot, and that leaving a\n\
-room to the north does not guarantee entering the next from the south.\n\
-Good luck!",
-    [TREE] =
-    "The trees of the forest are large hardwood oak and maple, with an\n\
-occasional grove of pine or spruce.  There is quite a bit of under-\n\
-growth, largely birch and ash saplings plus nondescript bushes of\n\
-various sorts.  This time of year visibility is quite restricted by\n\
-all the leaves, but travel is quite easy if you detour around the\n\
-spruce and berry bushes.",
-    [DIG] =
-    "Digging without a shovel is quite impractical.  Even with a shovel\n\
-progress is unlikely.",
+    [HELP] = "I know of places, actions, and things.  Most of my vocabulary\n"
+             "describes places and is used to move you there.  To move, try words\n"
+             "like forest, building, downstream, enter, east, west, north, south,\n"
+             "up, or down.  I know about a few special objects, like a black rod\n"
+             "hidden in the cave.  These objects can be manipulated using some of\n"
+             "the action words that I know.  Usually you will need to give both the\n"
+             "object and action words (in either order), but sometimes I can infer\n"
+             "the object from the verb alone.  Some objects also imply verbs; in\n"
+             "particular, \"inventory\" implies \"take inventory\", which causes me to\n"
+             "give you a list of what you're carrying.  The objects have side\n"
+             "effects; for instance, the rod scares the bird.  Usually people having\n"
+             "trouble moving just need to try a few more words.  Usually people\n"
+             "trying unsuccessfully to manipulate an object are attempting something\n"
+             "beyond their (or my!) capabilities and should try a completely\n"
+             "different tack.  To speed the game you can sometimes move long\n"
+             "distances with a single word.  For example, \"building\" usually gets\n"
+             "you to the building from anywhere above ground except when lost in the\n"
+             "forest.  Also, note that cave passages turn a lot, and that leaving a\n"
+             "room to the north does not guarantee entering the next from the south.\n"
+             "Good luck!",
+    [TREE] = "The trees of the forest are large hardwood oak and maple, with an\n"
+             "occasional grove of pine or spruce.  There is quite a bit of under-\n"
+             "growth, largely birch and ash saplings plus nondescript bushes of\n"
+             "various sorts.  This time of year visibility is quite restricted by\n"
+             "all the leaves, but travel is quite easy if you detour around the\n"
+             "spruce and berry bushes.",
+    [DIG] = "Digging without a shovel is quite impractical.  Even with a shovel\n"
+            "progress is unlikely.",
     [LOST] = "I'm as confused as you are.",
-    [ANO_EXPLOSION1] =
-    "There is a loud explosion and you are suddenly splashed across the\n\
-walls of the room.",
-    [ANO_EXPLOSION2] =
-    "There is a loud explosion and a twenty-foot hole appears in the far\n\
-wall, burying the snakes in the rubble.  A river of molten lava pours\n\
-in through the hole, destroying everything in its path, including you!",
-    [MIST] = "Mist is a white vapor, usually water, seen from time to time in\n\
-caverns.  It can be found anywhere but is frequently a sign of a deep\n\
-pit leading down to water.",
+    [ANO_EXPLOSION1] = "There is a loud explosion and you are suddenly splashed across the\n"
+                       "walls of the room.",
+    [ANO_EXPLOSION2] = "There is a loud explosion and a twenty-foot hole appears in the far\n"
+                       "wall, burying the snakes in the rubble.  A river of molten lava pours\n"
+                       "in through the hole, destroying everything in its path, including you!",
+    [MIST] = "Mist is a white vapor, usually water, seen from time to time in\n"
+             "caverns.  It can be found anywhere but is frequently a sign of a deep\n"
+             "pit leading down to water.",
     [FUCK] = "Watch it!",
-    [ANO_EXPLOSION3] =
-    "There is a loud explosion, and a twenty-foot hole appears in the far\n\
-wall, burying the dwarves in the rubble.  You march through the hole\n\
-and find yourself in the main office, where a cheering band of\n\
-friendly elves carry the conquering adventurer off into the sunset.",
-    [STOP] = "I don't know the word \"stop\".  Use \"quit\" if \
-you want to give up.",
-    [INFO] =
-    "If you want to end your adventure early, say \"quit\".  To get full\n\
-credit for a treasure, you must have left it safely in the building,\n\
-though you get partial credit just for locating it.  You lose points\n\
-for getting killed, or for quitting, though the former costs you more.\n\
-There are also points based on how much (if any) of the cave you've\n\
-managed to explore; in particular, there is a large bonus just for\n\
-getting in (to distinguish the beginners from the rest of the pack),\n\
-and there are other ways to determine whether you've been through some\n\
-of the more harrowing sections.  If you think you've found all the\n\
-treasures, just keep exploring for a while.  If nothing interesting\n\
-happens, you haven't found them all yet.  If something interesting\n\
-DOES happen, it means you're getting a bonus and have an opportunity\n\
-to garner many more points in the master's section.\n\
-I may occasionally offer hints if you seem to be having trouble.\n\
-If I do, I'll warn you in advance how much it will affect your score\n\
-to accept the hints.  Finally, to save paper, you may specify \"brief\",\n\
-which tells me never to repeat the full description of a place\n\
-unless you explicitly ask me to.",
+    [ANO_EXPLOSION3] = "There is a loud explosion, and a twenty-foot hole appears in the far\n"
+                       "wall, burying the dwarves in the rubble.  You march through the hole\n"
+                       "and find yourself in the main office, where a cheering band of\n"
+                       "friendly elves carry the conquering adventurer off into the sunset.",
+    [STOP] = "I don't know the word \"stop\".  Use \"quit\" if you want to give up.",
+    [INFO] = "If you want to end your adventure early, say \"quit\".  To get full\n"
+             "credit for a treasure, you must have left it safely in the building,\n"
+             "though you get partial credit just for locating it.  You lose points\n"
+             "for getting killed, or for quitting, though the former costs you more.\n"
+             "There are also points based on how much (if any) of the cave you've\n"
+             "managed to explore; in particular, there is a large bonus just for\n"
+             "getting in (to distinguish the beginners from the rest of the pack),\n"
+             "and there are other ways to determine whether you've been through some\n"
+             "of the more harrowing sections.  If you think you've found all the\n"
+             "treasures, just keep exploring for a while.  If nothing interesting\n"
+             "happens, you haven't found them all yet.  If something interesting\n"
+             "DOES happen, it means you're getting a bonus and have an opportunity\n"
+             "to garner many more points in the master's section.\n"
+             "I may occasionally offer hints if you seem to be having trouble.\n"
+             "If I do, I'll warn you in advance how much it will affect your score\n"
+             "to accept the hints.  Finally, to save paper, you may specify \"brief\",\n"
+             "which tells me never to repeat the full description of a place\n"
+             "unless you explicitly ask me to.",
     [SWIM] = "I don't know how."
 };
 
@@ -248,12 +241,10 @@ char const *const default_msg[] = {
     [EAT] = "Don't be ridiculous!",
     [KILL] = "Don't be ridiculous!",
     [WAKE] = "Don't be ridiculous!",
-    [DRINK] =
-    "You have taken a drink from the stream.  The water tastes strongly of\n\
-minerals, but is not unpleasant.  It is extremely cold.",
-    [RUB] =
-    "Rubbing the electric lamp is not particularly rewarding.  Anyway,\n\
-nothing exciting happens.",
+    [DRINK] = "You have taken a drink from the stream.  The water tastes strongly of\n"
+              "minerals, but is not unpleasant.  It is extremely cold.",
+    [RUB] = "Rubbing the electric lamp is not particularly rewarding.  Anyway,\n"
+            "nothing exciting happens.",
     [FEED] = "There is nothing here to eat.",
     [FILL] = "You can't fill that.",
     [BREAK] = "It is beyond your power to do that.",
@@ -261,12 +252,10 @@ nothing exciting happens.",
     [READ] = "I'm afraid I don't understand.",
     [FEEFIE] = "I don't know how.",
     [BRIEF] = "On what?",
-    [FIND] =
-    "I can only tell you what you see as you move about and manipulate\n\
-things.  I cannot tell you where remote things are.",
-    [INVENTORY] =
-    "I can only tell you what you see as you move about and manipulate\n\
-things.  I cannot tell you where remote things are.",
+    [FIND] = "I can only tell you what you see as you move about and manipulate\n"
+             "things.  I cannot tell you where remote things are.",
+    [INVENTORY] = "I can only tell you what you see as you move about and manipulate\n"
+                  "things.  I cannot tell you where remote things are.",
     [SCORE] = "Eh?",
     [QUIT] = "Eh?",
 };
@@ -316,10 +305,10 @@ char const* const remarks[REM_SIZE] = {
     [4] = "There is no way across the fissure.",
     [5] = "You can't fit this five-foot clam through that little passage!",
     [6] = "You can't fit this five-foot oyster through that little passage!",
-    [7] = "You have crawled around in some little holes and wound up back in the\n\
-main passage.",
-    [8] = "You have crawled around in some little holes and found your way\n\
-blocked by a recent cave-in.  You are now back in the main passage.",
+    [7] = "You have crawled around in some little holes and wound up back in the\n"
+          "main passage.",
+    [8] = "You have crawled around in some little holes and found your way\n"
+          "blocked by a recent cave-in.  You are now back in the main passage.",
     [9] = "It is too far up for you to reach.",
     [10] = "The door is extremely rusty and refuses to open.",
     [11] = "The dragon looks rather nasty.  You'd best not try to get by.",
@@ -329,8 +318,7 @@ blocked by a recent cave-in.  You are now back in the main passage.",
 };
 int visits[MAX_LOC + 1];
 
-char const *const all_alike =
-    "You are in a maze of twisty little passages, all alike.";
+char const *const all_alike = "You are in a maze of twisty little passages, all alike.";
 char const *const dead_end = "Dead end.";
 int slit_rmk, grate_rmk, bridge_rmk, loop_rmk;
 
@@ -412,21 +400,19 @@ int death_count;
 
 constexpr int max_deaths = 3;
 char const *const death_wishes[2 * max_deaths] = {
-    [0] =
-    "Oh dear, you seem to have gotten yourself killed.  I might be able to\n\
-help you out, but I've never really done this before.  Do you want me\n\
-to try to reincarnate you?",
-    [1] = "All right.  But don't blame me if something goes wr......\n\
-                 --- POOF!! ---\n\
-You are engulfed in a cloud of orange smoke.  Coughing and gasping,\n\
-you emerge from the smoke and find....",
-    [2] = "You clumsy oaf, you've done it again!  I don't know how long I can\n\
-keep this up.  Do you want me to try reincarnating you again?",
-    [3] = "Okay, now where did I put my resurrection kit?....  >POOF!<\n\
-Everything disappears in a dense cloud of orange smoke.",
-    [4] =
-    "Now you've really done it!  I'm out of orange smoke!  You don't expect\n\
-me to do a decent reincarnation without any orange smoke, do you?",
+    [0] = "Oh dear, you seem to have gotten yourself killed.  I might be able to\n"
+          "help you out, but I've never really done this before.  Do you want me\n"
+          "to try to reincarnate you?",
+    [1] = "All right.  But don't blame me if something goes wr......\n"
+          "                      --- POOF!! ---\n"
+          "You are engulfed in a cloud of orange smoke.  Coughing and gasping,\n"
+          "you emerge from the smoke and find....",
+    [2] = "You clumsy oaf, you've done it again!  I don't know how long I can\n"
+          "keep this up.  Do you want me to try reincarnating you again?",
+    [3] = "Okay, now where did I put my resurrection kit?....  >POOF!<\n"
+          "Everything disappears in a dense cloud of orange smoke.",
+    [4] = "Now you've really done it!  I'm out of orange smoke!  You don't expect\n"
+          "me to do a decent reincarnation without any orange smoke, do you?",
     [5] = "Okay, if you're so smart, do it yourself!  I'm leaving!"
 };
 
@@ -438,9 +424,8 @@ int hint_thresh[n_hints] = {0, 0, 4, 5, 8, 75, 25, 20};
 int hint_cost[n_hints] = {5, 10, 2, 2, 2, 4, 5, 3};
 char const *const hint_prompt[n_hints] = {
     [0] = "Welcome to Adventure!!  Would you like instructions?",
-    [1] =
-    "Hmmm, this looks like a clue, which means it'll cost you 10 points to\n\
-read it.  Should I go ahead and read it anyway?",
+    [1] = ("Hmmm, this looks like a clue, which means it'll cost you 10 points to\n"
+           "read it.  Should I go ahead and read it anyway?"),
     [2] = "Are you trying to get into the cave?",
     [3] = "Are you trying to catch the bird?",
     [4] = "Are you trying to deal somehow with the snake?",
