@@ -2333,35 +2333,29 @@ It would be advisable to use the exit.",
     new_note("A burly troll stands by the bridge and insists you throw him a\n\
 treasure before you may cross.");
     new_note("The troll steps out from beneath the bridge and blocks your way.");
-    new_note(0);
+    new_note(nullptr);
     new_obj(BRIDGE_, 0, BRIDGE, neside);
     new_obj(BRIDGE, 0, BRIDGE, swside);
-    new_note(
-        "A rickety wooden bridge extends across the chasm, vanishing into the\n\
-mist.  A sign posted on the bridge reads, \"STOP!  PAY TROLL!\"");
-    new_note(
-        "The wreckage of a bridge (and a dead bear) can be seen at the bottom\n\
-of the chasm.");
+    new_note("A rickety wooden bridge extends across the chasm, vanishing into the\n"
+             "mist.  A sign posted on the bridge reads, \"STOP!  PAY TROLL!\"");
+    new_note("The wreckage of a bridge (and a dead bear) can be seen at the bottom of the chasm.");
     new_obj(DRAGON_, 0, DRAGON, scan3);
     new_obj(DRAGON, 0, DRAGON, scan1);
     new_note("A huge green fierce dragon bars the way!");
-    new_note(
-        "Congratulations!  You have just vanquished a dragon with your bare\n\
-hands! (Unbelievable, isn't it?)");
+    new_note("Congratulations!  You have just vanquished a dragon with your bare\n"
+             "hands! (Unbelievable, isn't it?)");
     new_note("The body of a huge green dead dragon is lying off to one side.");
     new_obj(SHADOW_, 0, SHADOW, window);
     new_obj(SHADOW, 0, SHADOW, windoe);
     new_note("The shadowy figure seems to be trying to attract your attention.");
     new_obj(PLANT2_, 0, PLANT2, e2pit);
     new_obj(PLANT2, 0, PLANT2, w2pit);
-    new_note(0);
-    new_note(
-        "The top of a 12-foot-tall beanstalk is poking out of the west pit.");
-    new_note(
-        "There is a huge beanstalk growing out of the west pit up to the hole.");
+    new_note(nullptr);
+    new_note("The top of a 12-foot-tall beanstalk is poking out of the west pit.");
+    new_note("There is a huge beanstalk growing out of the west pit up to the hole.");
     new_obj(CRYSTAL_, 0, CRYSTAL, wfiss);
     new_obj(CRYSTAL, 0, CRYSTAL, efiss);
-    new_note(0);
+    new_note(nullptr);
     new_note("A crystal bridge now spans the fissure.");
     new_note("The crystal bridge has vanished!");
     new_obj(TREADS_, 0, TREADS, emist);
@@ -2410,7 +2404,7 @@ hands! (Unbelievable, isn't it?)");
     new_obj(GOLD, "Large gold nugget", 0, nugget);
     new_note("There is a large sparkling nugget of gold here!");
     new_obj(MOSS, 0, MOSS, soft);
-    new_note(0);
+    new_note(nullptr);
     new_obj(BATTERIES, "Batteries", 0, limbo);
     new_note("There are fresh batteries here.");
     new_note("Some worn-out batteries have been discarded nearby.");
@@ -2418,7 +2412,7 @@ hands! (Unbelievable, isn't it?)");
     new_note("There is a massive vending machine here.  The instructions on it read:\n"
              "\"Drop coins here to receive fresh batteries.\"");
     new_obj(GEYSER, 0, GEYSER, view);
-    new_note(0);
+    new_note(nullptr);
     new_obj(MESSAGE, 0, MESSAGE, limbo);
     new_note("There is a message scrawled in the dust in a flowery script, reading:\n"
              "\"This is not the maze where the pirate leaves his treasure chest.\"");
@@ -2426,16 +2420,16 @@ hands! (Unbelievable, isn't it?)");
     new_note("There is a ferocious cave bear eying you from the far end of the room!");
     new_note("There is a gentle cave bear sitting placidly in one corner.");
     new_note("There is a contented-looking bear wandering about nearby.");
-    new_note(0);
+    new_note(nullptr);
     new_obj(PIRATE, 0, PIRATE, limbo);
-    new_note(0);
+    new_note(nullptr);
     new_obj(ART, 0, ART, oriental);
-    new_note(0);
+    new_note(nullptr);
     new_obj(AXE, "Dwarf's axe", 0, limbo);
     new_note("There is a little axe here.");
     new_note("There is a little axe lying beside the bear.");
     new_obj(STALACTITE, 0, STALACTITE, tite);
-    new_note(0);
+    new_note(nullptr);
     new_obj(PLANT, 0, PLANT, wpit);
     new_note("There is a tiny little plant in the pit, murmuring \"Water, water, "
              "...\"");
@@ -2446,7 +2440,7 @@ hands! (Unbelievable, isn't it?)");
     new_note("There is a gigantic beanstalk stretching all the way up to the hole.");
     new_note("You've over-watered the plant!  It's shriveling up!  It's, it's...");
     new_obj(MIRROR, 0, MIRROR, mirror);
-    new_note(0);
+    new_note(nullptr);
     new_obj(OIL, "Oil in the bottle", 0, limbo);
     new_obj(WATER, "Water in the bottle", 0, limbo);
     new_obj(BOTTLE, "Small bottle", 0, house);
@@ -2470,7 +2464,7 @@ hands! (Unbelievable, isn't it?)");
              "\"CONGRATULATIONS ON BRINGING LIGHT INTO THE DARK-ROOM!\"");
     new_obj(SNAKE, 0, SNAKE, hmk);
     new_note("A huge green fierce snake bars the way!");
-    new_note(0);
+    new_note(nullptr);
     new_obj(PILLOW, "Velvet pillow", 0, soft);
     new_note("A small velvet pillow lies on the floor.");
     new_obj(DOOR, 0, DOOR, immense);
