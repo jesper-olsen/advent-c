@@ -6,7 +6,6 @@
 
 constexpr int HASH_PRIME = 1009;
 #define travel_size 740
-#define REM_SIZE 15
 #define make_loc(x, l, s, f)                                                   \
   {                                                                            \
     long_desc[x] = l;                                                          \
@@ -31,7 +30,6 @@ constexpr int HASH_PRIME = 1009;
 #define holds(o) (100 + (o))
 #define sees(o) (200 + (o))
 #define not(o, k) (300 + (o) + 100 * (k))
-#define sayit (max_spec + REM_SIZE)
 #define twist(l, n, s, e, w, ne, se, nw, sw, u, d, m)                          \
   make_loc(l, m, 0, 0);                                                        \
   make_inst(N, 0, n);                                                          \
@@ -46,17 +44,6 @@ constexpr int HASH_PRIME = 1009;
   make_inst(D, 0, d);
 #define forced_move(loc) (loc >= min_forced_loc)
 #define FORCE 0
-
-#define new_obj(t, n, b, l)                                                    \
-  {                                                                            \
-    name[t] = n;                                                               \
-    base[t] = b;                                                               \
-    offset[t] = note_ptr;                                                      \
-    prop[t] = (is_treasure(t) ? -1 : 0);                                       \
-    drop(t, l);                                                                \
-  }
-#define new_note(n) note[note_ptr++] = n
-#define here(t) (toting(t) || place[t] == loc)
 #define water_here ((flags[loc] & (liquid + oil)) == liquid)
 #define oil_here ((flags[loc] & (liquid + oil)) == liquid + oil)
 #define no_liquid_here ((flags[loc] & liquid) == 0)
@@ -83,8 +70,6 @@ constexpr int HASH_PRIME = 1009;
   ((obj == WATER && prop[BOTTLE] == 0) || (obj == OIL && prop[BOTTLE] == 2))
 #define bottle_empty (prop[BOTTLE] == 1 || prop[BOTTLE] < 0)
 #define clam_oyster (obj == CLAM ? "clam" : "oyster")
-#define chest_loc dead2
-#define message_loc pony
 #define pirate_not_spotted (place[MESSAGE] == limbo)
 #define too_easy(i) (i == PYRAMID && (loc == proom || loc == droom))
 #define closing (clock1 < 0)
@@ -277,12 +262,16 @@ typedef enum {
     ppass, pdrop, troll
 } location;
 
-constexpr int MAX_LOC = didit;
-constexpr int max_pirate_loc = dead2;
-constexpr int min_in_cave = inside;
-constexpr int min_lower_loc = emist;
-constexpr int min_forced_loc = crack;
-constexpr int max_spec = troll;
+constexpr location max_loc = didit;
+constexpr location max_pirate_loc = dead2;
+constexpr location min_in_cave = inside;
+constexpr location min_lower_loc = emist;
+constexpr location min_forced_loc = crack;
+constexpr location max_spec = troll;
+constexpr int REM_SIZE = 15;
+constexpr location message_loc = pony;
+constexpr location chest_loc = dead2;
+constexpr int sayit = max_spec + REM_SIZE;
 
 typedef struct {
     motion mot;
@@ -294,10 +283,10 @@ hash_entry hash_table[HASH_PRIME];
 wordtype current_type;
 
 instruction travels[travel_size];
-instruction *start[MAX_LOC + 2];
-const char *long_desc[MAX_LOC + 1];
-const char *short_desc[MAX_LOC + 1];
-int flags[MAX_LOC + 1];
+instruction *start[max_loc + 2];
+const char *long_desc[max_loc + 1];
+const char *short_desc[max_loc + 1];
+int flags[max_loc + 1];
 char const* const remarks[REM_SIZE] = {
     [1] = "You don't fit through a two-inch slit!",
     [2] = "You can't go through a locked steel grate!",
@@ -316,13 +305,13 @@ char const* const remarks[REM_SIZE] = {
     [13] = "There is no longer any way across the chasm.",
     [14] = default_msg[EAT],
 };
-int visits[MAX_LOC + 1];
+int visits[max_loc + 1];
 
 char const* const all_alike = "You are in a maze of twisty little passages, all alike.";
 char const* const dead_end = "Dead end.";
 int slit_rmk, grate_rmk, bridge_rmk, loop_rmk;
 
-object first[MAX_LOC + 1];
+object first[max_loc + 1];
 object link[max_obj + 1];
 object base[max_obj + 2];
 int prop[max_obj + 1];
@@ -333,17 +322,25 @@ static inline bool toting(object t) {
     return place[t] < 0;
 }
 
-char *name[max_obj + 1];
-char *note[100];
+char const* name[max_obj + 1];
+char const* note[100];
 int offset[max_obj + 1];
 int holding;
 int note_ptr = 0;
+
+static inline void new_note(const char* n) {
+    note[note_ptr++] = n;
+}
 
 constexpr int BUF_SIZE = 72;
 char buffer[BUF_SIZE];
 char word1[BUF_SIZE], word2[BUF_SIZE];
 
 location oldoldloc, oldloc, loc, newloc;
+
+static inline bool here(object t) {
+    return toting(t) || place[t] == loc;
+}
 
 motion mot;
 action verb;
@@ -569,6 +566,14 @@ bool is_at_loc(object t) {
         if (place[tt] == loc)
             return true;
     return false;
+}
+
+void new_obj(object t, const char* n, object b, location l) {
+    name[t] = n;
+    base[t] = b;
+    offset[t] = note_ptr;
+    prop[t] = (is_treasure(t) ? -1 : 0);
+    drop(t, l);
 }
 
 bool yes(const char *q, const char *y, const char *n) {
@@ -2410,18 +2415,15 @@ hands! (Unbelievable, isn't it?)");
     new_note("There are fresh batteries here.");
     new_note("Some worn-out batteries have been discarded nearby.");
     new_obj(PONY, 0, PONY, pony);
-    new_note(
-        "There is a massive vending machine here.  The instructions on it read:\n\
-\"Drop coins here to receive fresh batteries.\"");
+    new_note("There is a massive vending machine here.  The instructions on it read:\n"
+             "\"Drop coins here to receive fresh batteries.\"");
     new_obj(GEYSER, 0, GEYSER, view);
     new_note(0);
     new_obj(MESSAGE, 0, MESSAGE, limbo);
-    new_note(
-        "There is a message scrawled in the dust in a flowery script, reading:\n\
-\"This is not the maze where the pirate leaves his treasure chest.\"");
+    new_note("There is a message scrawled in the dust in a flowery script, reading:\n"
+             "\"This is not the maze where the pirate leaves his treasure chest.\"");
     new_obj(BEAR, 0, BEAR, barr);
-    new_note(
-        "There is a ferocious cave bear eying you from the far end of the room!");
+    new_note("There is a ferocious cave bear eying you from the far end of the room!");
     new_note("There is a gentle cave bear sitting placidly in one corner.");
     new_note("There is a contented-looking bear wandering about nearby.");
     new_note(0);
@@ -2438,14 +2440,11 @@ hands! (Unbelievable, isn't it?)");
     new_note("There is a tiny little plant in the pit, murmuring \"Water, water, "
              "...\"");
     new_note("The plant spurts into furious growth for a few seconds.");
-    new_note("There is a 12-foot-tall beanstalk stretching up out of the pit,\n\
-bellowing \"Water!!  Water!!\"");
-    new_note(
-        "The plant grows explosively, almost filling the bottom of the pit.");
-    new_note(
-        "There is a gigantic beanstalk stretching all the way up to the hole.");
-    new_note(
-        "You've over-watered the plant!  It's shriveling up!  It's, it's...");
+    new_note("There is a 12-foot-tall beanstalk stretching up out of the pit,\n"
+             "bellowing \"Water!!  Water!!\"");
+    new_note("The plant grows explosively, almost filling the bottom of the pit.");
+    new_note("There is a gigantic beanstalk stretching all the way up to the hole.");
+    new_note("You've over-watered the plant!  It's shriveling up!  It's, it's...");
     new_obj(MIRROR, 0, MIRROR, mirror);
     new_note(0);
     new_obj(OIL, "Oil in the bottle", 0, limbo);
@@ -2459,17 +2458,16 @@ bellowing \"Water!!  Water!!\"");
     new_obj(KNIFE, 0, 0, limbo);
     new_obj(DWARF, 0, DWARF, limbo);
     new_obj(MAG, "\"Spelunker Today\"", 0, ante);
-    new_note(
-        "There are a few recent issues of \"Spelunker Today\" magazine here.");
+    new_note("There are a few recent issues of \"Spelunker Today\" magazine here.");
     new_obj(OYSTER, "Giant oyster >GROAN!<", 0, limbo);
     new_note("There is an enormous oyster here with its shell tightly closed.");
-    new_note("Interesting.  There seems to be something written \
-on the underside of\nthe oyster.");
+    new_note("Interesting.  There seems to be something written "
+             "on the underside of\nthe oyster.");
     new_obj(CLAM, "Giant clam >GRUNT!<", 0, shell);
     new_note("There is an enormous clam here with its shell tightly closed.");
     new_obj(TABLET, 0, TABLET, droom);
-    new_note("A massive stone tablet embedded in the wall reads:\n\
-\"CONGRATULATIONS ON BRINGING LIGHT INTO THE DARK-ROOM!\"");
+    new_note("A massive stone tablet embedded in the wall reads:\n"
+             "\"CONGRATULATIONS ON BRINGING LIGHT INTO THE DARK-ROOM!\"");
     new_obj(SNAKE, 0, SNAKE, hmk);
     new_note("A huge green fierce snake bars the way!");
     new_note(0);
@@ -2531,8 +2529,8 @@ on the underside of\nthe oyster.");
                         odloc[j] = dloc[j];
                     }
                     printf(
-                        "A little dwarf just walked around a corner, saw you, threw a little\n\
-axe at you, cursed, and ran away.  (The axe missed.)\n");
+                        "A little dwarf just walked around a corner, saw you, threw a little\n"
+                        "axe at you, cursed, and ran away.  (The axe missed.)\n");
                     drop(AXE, loc);
                 }
             } else {
@@ -3744,7 +3742,7 @@ try_move:
                 ll = q->dest;
                 if (ll == l)
                     goto found;
-                if (ll <= MAX_LOC && forced_move(ll) && start[ll]->dest == l)
+                if (ll <= max_loc && forced_move(ll) && start[ll]->dest == l)
                     qq = q;
             }
             if (qq == nullptr) {
@@ -3826,7 +3824,7 @@ no_good:
         }
 
         newloc = q->dest;
-        if (newloc <= MAX_LOC)
+        if (newloc <= max_loc)
             continue;
         if (newloc > max_spec) {
             printf("%s\n", remarks[newloc - max_spec]);
