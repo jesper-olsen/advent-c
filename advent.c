@@ -266,7 +266,7 @@ constexpr location max_loc = didit;
 constexpr location max_pirate_loc = dead2;
 constexpr location min_in_cave = inside;
 constexpr location min_lower_loc = emist;
-constexpr location min_forced_loc = crack;
+constexpr location min_forced_loc = crack;  // crack and above are pseudo-locations
 constexpr location max_spec = troll;
 constexpr int REM_SIZE = 15;
 constexpr location message_loc = pony;
@@ -286,7 +286,7 @@ instruction travels[travel_size];
 instruction *start[max_loc + 2];
 const char *long_desc[max_loc + 1];
 const char *short_desc[max_loc + 1];
-int flags[max_loc + 1];
+int flags[max_loc + 1]; // bitmaps for special properties
 char const* const remarks[REM_SIZE] = {
     [1] = "You don't fit through a two-inch slit!",
     [2] = "You can't go through a locked steel grate!",
@@ -305,27 +305,27 @@ char const* const remarks[REM_SIZE] = {
     [13] = "There is no longer any way across the chasm.",
     [14] = default_msg[EAT],
 };
-int visits[max_loc + 1];
+int visits[max_loc + 1]; // how often haveyou been here?
 
 char const* const all_alike = "You are in a maze of twisty little passages, all alike.";
 char const* const dead_end = "Dead end.";
 int slit_rmk, grate_rmk, bridge_rmk, loop_rmk;
 
-object first[max_loc + 1];
-object link[max_obj + 1];
-object base[max_obj + 2];
-int prop[max_obj + 1];
+object first[max_loc + 1];  // first object present at a location
+object link[max_obj + 1];   // next object present in the same location
+object base[max_obj + 2];   // the smallestobject in each object's group, if any
+int prop[max_obj + 1];      // current property value for each object
 
-location place[max_obj + 1];
+location place[max_obj + 1];  // each objects current location
 
 static inline bool toting(object t) {
     return place[t] < 0;
 }
 
-char const* name[max_obj + 1];
-char const* note[100];
-int offset[max_obj + 1];
-int holding;
+char const* name[max_obj + 1]; // name of object for inventory listing
+char const* note[100];         // description of object properties
+int offset[max_obj + 1];       // where notes for each object start
+int holding;                   // number of objects with prop[t]<0
 int n_notes = 0;
 
 static inline void new_note(const char* n) {
@@ -336,7 +336,7 @@ constexpr int BUF_SIZE = 72;
 char buffer[BUF_SIZE];
 char word1[BUF_SIZE], word2[BUF_SIZE];
 
-location oldoldloc, oldloc, loc, newloc;
+location oldoldloc, oldloc, loc, newloc; // recent and future locations
 
 static inline bool here(object t) {
     return toting(t) || place[t] == loc;
