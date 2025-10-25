@@ -76,7 +76,7 @@ constexpr int HASH_PRIME = 1009;
 constexpr int MAX_SCORE = 350;
 constexpr int HIGHEST_CLASS = 8;
 
-typedef enum {
+typedef enum: uint16_t {
     lighted = 1<<0,
     oil     = 1<<1,
     liquid  = 1<<2,
@@ -326,10 +326,10 @@ char const* name[max_obj + 1];
 char const* note[100];
 int offset[max_obj + 1];
 int holding;
-int note_ptr = 0;
+int n_notes = 0;
 
 static inline void new_note(const char* n) {
-    note[note_ptr++] = n;
+    note[n_notes++] = n;
 }
 
 constexpr int BUF_SIZE = 72;
@@ -571,7 +571,7 @@ bool is_at_loc(object t) {
 void new_obj(object t, const char* n, object b, location l) {
     name[t] = n;
     base[t] = b;
-    offset[t] = note_ptr;
+    offset[t] = n_notes;
     prop[t] = (is_treasure(t) ? -1 : 0);
     drop(t, l);
 }
@@ -651,7 +651,7 @@ bool pct(int r) {
 bool dwarf() {
     if (dflag < 2)
         return false;
-    for (int j = 1; j <= nd; j++)
+    for (size_t j = 1; j <= nd; j++)
         if (dloc[j] == loc)
             return true;
     return false;
@@ -2514,10 +2514,10 @@ treasure before you may cross.");
             } else if (dflag == 1) {
                 if (loc >= min_lower_loc && pct(5)) {
                     dflag = 2;
-                    for (j = 0; j < 2; j++)
+                    for (size_t j = 0; j < 2; j++)
                         if (pct(50))
                             dloc[1 + ran(nd)] = limbo;
-                    for (j = 1; j <= nd; j++) {
+                    for (size_t j = 1; j <= nd; j++) {
                         if (dloc[j] == loc)
                             dloc[j] = nugget;
                         odloc[j] = dloc[j];
@@ -2529,7 +2529,7 @@ treasure before you may cross.");
                 }
             } else {
                 dtotal = attack = stick = 0;
-                for (j = 0; j <= nd; j++)
+                for (size_t j = 0; j <= nd; j++)
                     if (dloc[j] != limbo) {
                         int i;
                         for (i = 0, q = start[dloc[j]]; q < start[dloc[j] + 1]; q++) {
@@ -2560,12 +2560,11 @@ treasure before you may cross.");
                                             k = 1;
                                     }
                                     if (k < 0) {
-                                        printf(
-                                            "Out from the shadows behind you pounces a bearded pirate!  \
-\"Har, har,\"\n\
-he chortles, \"I'll just take all this booty and hide it away with me\n\
-chest deep in the maze!\"  He snatches your treasure and vanishes into\n\
-the gloom.\n");
+                                        printf("Out from the shadows behind you pounces a bearded pirate!  "
+                                               "\"Har, har,\"\n"
+                                               "he chortles, \"I'll just take all this booty and hide it away with me\n"
+                                               "chest deep in the maze!\"  He snatches your treasure and vanishes into\n"
+                                               "the gloom.\n");
                                         for (int i = min_treasure; i <= max_obj; i++)
                                             if (!too_easy(i)) {
                                                 if (base[i] == NOTHING && place[i] == loc)
