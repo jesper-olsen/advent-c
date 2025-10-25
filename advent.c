@@ -187,7 +187,7 @@ char const *const message[13] = {
              "all the leaves, but travel is quite easy if you detour around the\n"
              "spruce and berry bushes.",
     [DIG] = "Digging without a shovel is quite impractical.  Even with a shovel\n"
-            "progress is unlikely.",
+             "progress is unlikely.",
     [LOST] = "I'm as confused as you are.",
     [ANO_EXPLOSION1] = "There is a loud explosion and you are suddenly splashed across the\n"
                        "walls of the room.",
@@ -195,8 +195,8 @@ char const *const message[13] = {
                        "wall, burying the snakes in the rubble.  A river of molten lava pours\n"
                        "in through the hole, destroying everything in its path, including you!",
     [MIST] = "Mist is a white vapor, usually water, seen from time to time in\n"
-             "caverns.  It can be found anywhere but is frequently a sign of a deep\n"
-             "pit leading down to water.",
+                       "caverns.  It can be found anywhere but is frequently a sign of a deep\n"
+                       "pit leading down to water.",
     [FUCK] = "Watch it!",
     [ANO_EXPLOSION3] = "There is a loud explosion, and a twenty-foot hole appears in the far\n"
                        "wall, burying the dwarves in the rubble.  You march through the hole\n"
@@ -204,23 +204,23 @@ char const *const message[13] = {
                        "friendly elves carry the conquering adventurer off into the sunset.",
     [STOP] = "I don't know the word \"stop\".  Use \"quit\" if you want to give up.",
     [INFO] = "If you want to end your adventure early, say \"quit\".  To get full\n"
-             "credit for a treasure, you must have left it safely in the building,\n"
-             "though you get partial credit just for locating it.  You lose points\n"
-             "for getting killed, or for quitting, though the former costs you more.\n"
-             "There are also points based on how much (if any) of the cave you've\n"
-             "managed to explore; in particular, there is a large bonus just for\n"
-             "getting in (to distinguish the beginners from the rest of the pack),\n"
-             "and there are other ways to determine whether you've been through some\n"
-             "of the more harrowing sections.  If you think you've found all the\n"
-             "treasures, just keep exploring for a while.  If nothing interesting\n"
-             "happens, you haven't found them all yet.  If something interesting\n"
-             "DOES happen, it means you're getting a bonus and have an opportunity\n"
-             "to garner many more points in the master's section.\n"
-             "I may occasionally offer hints if you seem to be having trouble.\n"
-             "If I do, I'll warn you in advance how much it will affect your score\n"
-             "to accept the hints.  Finally, to save paper, you may specify \"brief\",\n"
-             "which tells me never to repeat the full description of a place\n"
-             "unless you explicitly ask me to.",
+                       "credit for a treasure, you must have left it safely in the building,\n"
+                       "though you get partial credit just for locating it.  You lose points\n"
+                       "for getting killed, or for quitting, though the former costs you more.\n"
+                       "There are also points based on how much (if any) of the cave you've\n"
+                       "managed to explore; in particular, there is a large bonus just for\n"
+                       "getting in (to distinguish the beginners from the rest of the pack),\n"
+                       "and there are other ways to determine whether you've been through some\n"
+                       "of the more harrowing sections.  If you think you've found all the\n"
+                       "treasures, just keep exploring for a while.  If nothing interesting\n"
+                       "happens, you haven't found them all yet.  If something interesting\n"
+                       "DOES happen, it means you're getting a bonus and have an opportunity\n"
+                       "to garner many more points in the master's section.\n"
+                       "I may occasionally offer hints if you seem to be having trouble.\n"
+                       "If I do, I'll warn you in advance how much it will affect your score\n"
+                       "to accept the hints.  Finally, to save paper, you may specify \"brief\",\n"
+                       "which tells me never to repeat the full description of a place\n"
+                       "unless you explicitly ask me to.",
     [SWIM] = "I don't know how."
 };
 
@@ -244,7 +244,7 @@ char const *const default_msg[] = {
     [DRINK] = "You have taken a drink from the stream.  The water tastes strongly of\n"
               "minerals, but is not unpleasant.  It is extremely cold.",
     [RUB] = "Rubbing the electric lamp is not particularly rewarding.  Anyway,\n"
-            "nothing exciting happens.",
+              "nothing exciting happens.",
     [FEED] = "There is nothing here to eat.",
     [FILL] = "You can't fill that.",
     [BREAK] = "It is beyond your power to do that.",
@@ -253,7 +253,7 @@ char const *const default_msg[] = {
     [FEEFIE] = "I don't know how.",
     [BRIEF] = "On what?",
     [FIND] = "I can only tell you what you see as you move about and manipulate\n"
-             "things.  I cannot tell you where remote things are.",
+               "things.  I cannot tell you where remote things are.",
     [INVENTORY] = "I can only tell you what you see as you move about and manipulate\n"
                   "things.  I cannot tell you where remote things are.",
     [SCORE] = "Eh?",
@@ -318,8 +318,8 @@ char const* const remarks[REM_SIZE] = {
 };
 int visits[MAX_LOC + 1];
 
-char const *const all_alike = "You are in a maze of twisty little passages, all alike.";
-char const *const dead_end = "Dead end.";
+char const* const all_alike = "You are in a maze of twisty little passages, all alike.";
+char const* const dead_end = "Dead end.";
 int slit_rmk, grate_rmk, bridge_rmk, loop_rmk;
 
 object first[MAX_LOC + 1];
@@ -995,9 +995,9 @@ int main() {
              q = travels;
     make_loc(
         road,
-        "You are standing at the end of a road before a small brick building.\n\
-Around you is a forest.  A small stream flows out of the building and\n\
-down a gully.",
+        "You are standing at the end of a road before a small brick building.\n"
+        "Around you is a forest.  A small stream flows out of the building and\n"
+        "down a gully.",
         "You're at end of road again.", lighted + liquid);
     make_inst(W, 0, hill);
     ditto(U);
@@ -1017,8 +1017,8 @@ down a gully.",
 
     make_loc(
         hill,
-        "You have walked up a hill, still in the forest.  The road slopes back\n\
-down the other side of the hill.  There is a building in the distance.",
+        "You have walked up a hill, still in the forest.  The road slopes back\n"
+        "down the other side of the hill.  There is a building in the distance.",
         "You're at hill in road.", lighted);
     make_inst(ROAD, 0, road);
     ditto(HOUSE);
@@ -1042,8 +1042,8 @@ down the other side of the hill.  There is a building in the distance.",
 
     make_loc(
         valley,
-        "You are in a valley in the forest beside a stream tumbling along a\n\
-rocky bed.",
+        "You are in a valley in the forest beside a stream tumbling along a\n"
+        "rocky bed.",
         "You're in valley.", lighted + liquid);
     make_inst(UPSTREAM, 0, road);
     ditto(HOUSE);
@@ -1082,8 +1082,8 @@ rocky bed.",
 
     make_loc(
         slit,
-        "At your feet all the water of the stream splashes into a 2-inch slit\n\
-in the rock.  Downstream the streambed is bare rock.",
+        "At your feet all the water of the stream splashes into a 2-inch slit\n"
+        "in the rock.  Downstream the streambed is bare rock.",
         "You're at slit in streambed.", lighted + liquid);
     make_inst(HOUSE, 0, road);
     make_inst(UPSTREAM, 0, valley);
@@ -1102,9 +1102,9 @@ in the rock.  Downstream the streambed is bare rock.",
 
     make_loc(
         outside,
-        "You are in a 20-foot depression floored with bare dirt.  Set into the\n\
-dirt is a strong steel grate mounted in concrete.  A dry streambed\n\
-leads into the depression.",
+        "You are in a 20-foot depression floored with bare dirt.  Set into the\n"
+        "dirt is a strong steel grate mounted in concrete.  A dry streambed\n"
+        "leads into the depression.",
         "You're outside grate.", lighted + cave_hint);
     make_inst(WOODS, 0, forest);
     ditto(E);
@@ -1123,8 +1123,8 @@ leads into the depression.",
 
     make_loc(
         inside,
-        "You are in a small chamber beneath a 3x3 steel grate to the surface.\n\
-A low crawl over cobbles leads inwards to the west.",
+        "You are in a small chamber beneath a 3x3 steel grate to the surface.\n"
+        "A low crawl over cobbles leads inwards to the west.",
         "You're below the grate.", lighted);
     make_inst(OUT, not(GRATE, 0), outside);
     ditto(OUT);
@@ -1139,8 +1139,8 @@ A low crawl over cobbles leads inwards to the west.",
 
     make_loc(
         cobbles,
-        "You are crawling over cobbles in a low passage.  There is a dim light\n\
-at the east end of the passage.",
+        "You are crawling over cobbles in a low passage.  There is a dim light\n"
+        "at the east end of the passage.",
         "You're in cobble crawl.", lighted);
     make_inst(OUT, 0, inside);
     ditto(SURFACE);
@@ -1154,10 +1154,10 @@ at the east end of the passage.",
 
     make_loc(
         debris,
-        "You are in a debris room filled with stuff washed in from the surface.\n\
-A low wide passage with cobbles becomes plugged with mud and debris\n\
-here, but an awkward canyon leads upward and west.  A note on the wall\n\
-says \"MAGIC WORD XYZZY\".",
+        "You are in a debris room filled with stuff washed in from the surface.\n"
+        "A low wide passage with cobbles becomes plugged with mud and debris\n"
+        "here, but an awkward canyon leads upward and west.  A note on the wall\n"
+        "says \"MAGIC WORD XYZZY\".",
         "You're in debris room.", 0);
     make_inst(DEPRESSION, not(GRATE, 0), outside);
     make_inst(ENTRANCE, 0, inside);
@@ -1186,9 +1186,9 @@ says \"MAGIC WORD XYZZY\".",
 
     make_loc(
         bird,
-        "You are in a splendid chamber thirty feet high.  The walls are frozen\n\
-rivers of orange stone.  An awkward canyon and a good passage exit\n\
-from east and west sides of the chamber.",
+        "You are in a splendid chamber thirty feet high.  The walls are frozen\n"
+        "rivers of orange stone.  An awkward canyon and a good passage exit\n"
+        "from east and west sides of the chamber.",
         "You're in bird chamber.", bird_hint);
     make_inst(DEPRESSION, not(GRATE, 0), outside);
     make_inst(ENTRANCE, 0, inside);
@@ -1201,8 +1201,8 @@ from east and west sides of the chamber.",
 
     make_loc(
         spit,
-        "At your feet is a small pit breathing traces of white mist.  An east\n\
-passage ends here except for a small crack leading on.",
+        "At your feet is a small pit breathing traces of white mist.  An east\n"
+        "passage ends here except for a small crack leading on.",
         "You're at top of small pit.", 0);
     make_inst(DEPRESSION, not(GRATE, 0), outside);
     make_inst(ENTRANCE, 0, inside);
@@ -1218,11 +1218,11 @@ passage ends here except for a small crack leading on.",
 
     make_loc(
         emist,
-        "You are at one end of a vast hall stretching forward out of sight to\n\
-the west.  There are openings to either side.  Nearby, a wide stone\n\
-staircase leads downward.  The hall is filled with wisps of white mist\n\
-swaying to and fro almost as if alive.  A cold wind blows up the\n\
-staircase.  There is a passage at the top of a dome behind you.",
+        "You are at one end of a vast hall stretching forward out of sight to\n"
+        "the west.  There are openings to either side.  Nearby, a wide stone\n"
+        "staircase leads downward.  The hall is filled with wisps of white mist\n"
+        "swaying to and fro almost as if alive.  A cold wind blows up the\n"
+        "staircase.  There is a passage at the top of a dome behind you.",
         "You're in Hall of Mists.", 0);
     make_inst(L, 0, nugget);
     ditto(S);
@@ -1242,8 +1242,8 @@ staircase.  There is a passage at the top of a dome behind you.",
     make_inst(Y2, 0, jumble);
 
     make_loc(nugget,
-             "This is a low room with a crude note on the wall.  The note says,\n\
-\"You won't get it up the steps\".",
+             "This is a low room with a crude note on the wall.  The note says,\n"
+             "\"You won't get it up the steps\".",
              "You're in nugget of gold room.", 0);
     make_inst(HALL, 0, emist);
     ditto(OUT);
@@ -1251,8 +1251,8 @@ staircase.  There is a passage at the top of a dome behind you.",
 
     make_loc(
         efiss,
-        "You are on the east bank of a fissure slicing clear across the hall.\n\
-The mist is quite thick here, and the fissure is too wide to jump.",
+        "You are on the east bank of a fissure slicing clear across the hall.\n"
+        "The mist is quite thick here, and the fissure is too wide to jump.",
         "You're on east bank of fissure.", 0);
     make_inst(HALL, 0, emist);
     ditto(E);
@@ -2762,7 +2762,7 @@ pre_parse:
                 clock1--;
             if (clock1 == 0) {
                 printf("A sepulchral voice, reverberating through the cave, says, \"Cave\n"
-                        "closing soon.  All adventurers exit immediately through main office.\"\n");
+                       "closing soon.  All adventurers exit immediately through main office.\"\n");
                 clock1 = -1;
                 prop[GRATE] = 0;
                 prop[CRYSTAL] = 0;
