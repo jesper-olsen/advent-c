@@ -559,10 +559,9 @@ static inline void destroy(object t) {
 }
 
 bool is_at_loc(object t) {
-    object tt;
     if (base[t] == NOTHING)
         return place[t] == loc;
-    for (tt = t; base[tt] == t; tt++)
+    for (object tt = t; base[tt] == t; tt++)
         if (place[tt] == loc)
             return true;
     return false;
@@ -3913,7 +3912,7 @@ quit:
     k = score();
     printf("You scored %d point%s out of a possible %d, using %d turn%s.\n", k,
            k == 1 ? "" : "s", MAX_SCORE, turns, turns == 1 ? "" : "s");
-    for (j = 0; CLASS_SCORE[j] < k; j++)
+    for (size_t j = 0; CLASS_SCORE[j] < k; j++)
         ;
 
     printf("%s\nTo achieve the next higher rating", CLASS_MESSAGE[j]);
