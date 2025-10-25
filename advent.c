@@ -3740,14 +3740,14 @@ try_move:
                 printf("Sorry, but I no longer seem to remember how you got here.\n");
                 continue;
             }
-            for (q = start[loc], qq = NULL; q < start[loc + 1]; q++) {
+            for (q = start[loc], qq = nullptr; q < start[loc + 1]; q++) {
                 ll = q->dest;
                 if (ll == l)
                     goto found;
                 if (ll <= MAX_LOC && forced_move(ll) && start[ll]->dest == l)
                     qq = q;
             }
-            if (qq == NULL) {
+            if (qq == nullptr) {
                 printf("You can't get there from here.\n");
                 continue;
             } else
