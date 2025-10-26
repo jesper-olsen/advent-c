@@ -305,7 +305,7 @@ char const* const remarks[REM_SIZE] = {
     [13] = "There is no longer any way across the chasm.",
     [14] = default_msg[EAT],
 };
-int visits[max_loc + 1]; // how often haveyou been here?
+int visits[max_loc + 1]; // how often have you been here?
 
 char const* const all_alike = "You are in a maze of twisty little passages, all alike.";
 char const* const dead_end = "Dead end.";
@@ -353,7 +353,7 @@ int west_count;
 bool was_dark;
 
 int interval = 5;
-int tally = 15;
+int tally = 15;     // unseen treasures
 int lost_treasures;
 
 bool gave_up;
@@ -2320,134 +2320,135 @@ It would be advisable to use the exit.",
         exit(-1);
     }
 
+    // One note per object property (sometimes "")
     new_obj(RUG_, 0, RUG, scan3);
     new_obj(RUG, "Persian rug", RUG, scan1);
-    new_note("There is a Persian rug spread out on the floor!");
-    new_note("The dragon is sprawled out on a Persian rug!!");
+    new_note("There is a Persian rug spread out on the floor!"); // RUG_,RUG: prop 0
+    new_note("The dragon is sprawled out on a Persian rug!!");   //           prop 1
     new_obj(TROLL2_, 0, TROLL2, limbo);
     new_obj(TROLL2, 0, TROLL2, limbo);
-    new_note("The troll is nowhere to be seen.");
+    new_note("The troll is nowhere to be seen.");                // TROLL2_, TROLL2: prop 0
     new_obj(TROLL_, 0, TROLL, neside);
     new_obj(TROLL, 0, TROLL, swside);
-    new_note("A burly troll stands by the bridge and insists you throw him a\n\
-treasure before you may cross.");
-    new_note("The troll steps out from beneath the bridge and blocks your way.");
-    new_note(nullptr);
+    new_note("A burly troll stands by the bridge and insists you throw him a\n"
+             "treasure before you may cross.");                  // TROLL_, TROLL: prop 0
+    new_note("The troll steps out from beneath the bridge and blocks your way."); // TROLL_,TROLL: prop 1
+    new_note(nullptr);  // prop 2
     new_obj(BRIDGE_, 0, BRIDGE, neside);
     new_obj(BRIDGE, 0, BRIDGE, swside);
-    new_note("A rickety wooden bridge extends across the chasm, vanishing into the\n"
-             "mist.  A sign posted on the bridge reads, \"STOP!  PAY TROLL!\"");
-    new_note("The wreckage of a bridge (and a dead bear) can be seen at the bottom of the chasm.");
+    new_note("A rickety wooden bridge extends across the chasm, vanishing into the\n" 
+             "mist.  A sign posted on the bridge reads, \"STOP!  PAY TROLL!\"");      // BRIDGE_, BRIDGE: prop 0
+    new_note("The wreckage of a bridge (and a dead bear) can be seen at the bottom of the chasm."); // prop 1
     new_obj(DRAGON_, 0, DRAGON, scan3);
     new_obj(DRAGON, 0, DRAGON, scan1);
-    new_note("A huge green fierce dragon bars the way!");
+    new_note("A huge green fierce dragon bars the way!");   // DRAGON: prop 0
     new_note("Congratulations!  You have just vanquished a dragon with your bare\n"
-             "hands! (Unbelievable, isn't it?)");
-    new_note("The body of a huge green dead dragon is lying off to one side.");
+             "hands! (Unbelievable, isn't it?)");           // DRAGON: prop 1
+    new_note("The body of a huge green dead dragon is lying off to one side."); // DRAGON: prop 3
     new_obj(SHADOW_, 0, SHADOW, window);
     new_obj(SHADOW, 0, SHADOW, windoe);
-    new_note("The shadowy figure seems to be trying to attract your attention.");
+    new_note("The shadowy figure seems to be trying to attract your attention."); // prop 0
     new_obj(PLANT2_, 0, PLANT2, e2pit);
     new_obj(PLANT2, 0, PLANT2, w2pit);
-    new_note(nullptr);
-    new_note("The top of a 12-foot-tall beanstalk is poking out of the west pit.");
-    new_note("There is a huge beanstalk growing out of the west pit up to the hole.");
+    new_note(nullptr);                                                 // PLANT2: prop 0
+    new_note("The top of a 12-foot-tall beanstalk is poking out of the west pit."); // PLANT2: prop 1
+    new_note("There is a huge beanstalk growing out of the west pit up to the hole."); // PLANT2: prop 2
     new_obj(CRYSTAL_, 0, CRYSTAL, wfiss);
     new_obj(CRYSTAL, 0, CRYSTAL, efiss);
-    new_note(nullptr);
-    new_note("A crystal bridge now spans the fissure.");
-    new_note("The crystal bridge has vanished!");
+    new_note(nullptr);           // prop 0
+    new_note("A crystal bridge now spans the fissure."); // prop 1
+    new_note("The crystal bridge has vanished!");    // prop 2
     new_obj(TREADS_, 0, TREADS, emist);
     new_obj(TREADS, 0, TREADS, spit);
-    new_note("Rough stone steps lead down the pit.");
-    new_note("Rough stone steps lead up the dome.");
+    new_note("Rough stone steps lead down the pit."); // TREADS_,TREADS prop 0
+    new_note("Rough stone steps lead up the dome.");  // TREADS_,TREADS prop 1
     new_obj(GRATE_, 0, GRATE, inside);
     new_obj(GRATE, 0, GRATE, outside);
-    new_note("The grate is locked.");
-    new_note("The grate is open.");
+    new_note("The grate is locked.");      // GRATE_,GRATE: prop 0
+    new_note("The grate is open.");        // GRATE_,GRATE: prop 1
     new_obj(MIRROR_, 0, MIRROR, limbo);
 
     new_obj(CHAIN, "Golden chain", CHAIN, barr);
-    new_note("There is a golden chain lying in a heap on the floor!");
-    new_note("The bear is locked to the wall with a golden chain!");
-    new_note("There is a golden chain locked to the wall!");
+    new_note("There is a golden chain lying in a heap on the floor!"); // CHAIN prop 0
+    new_note("The bear is locked to the wall with a golden chain!");   // CHAIN prop 1
+    new_note("There is a golden chain locked to the wall!");           // CHAIN prop 2
     new_obj(SPICES, "Rare spices", 0, chamber);
-    new_note("There are rare spices here!");
+    new_note("There are rare spices here!");         // prop 0
     new_obj(PEARL, "Glistening pearl", 0, limbo);
-    new_note("Off to one side lies a glistening pearl!");
+    new_note("Off to one side lies a glistening pearl!"); // prop 0
     new_obj(PYRAMID, "Platinum pyramid", 0, droom);
-    new_note("There is a platinum pyramid here, 8 inches on a side!");
+    new_note("There is a platinum pyramid here, 8 inches on a side!");  // prop 0
     new_obj(EMERALD, "Egg-sized emerald", 0, proom);
-    new_note("There is an emerald here the size of a plover's egg!");
+    new_note("There is an emerald here the size of a plover's egg!");   // prop 0
     new_obj(VASE, "Ming vase", 0, oriental);
-    new_note("There is a delicate, precious, Ming vase here!");
-    new_note("The vase is now resting, delicately, on a velvet pillow.");
-    new_note("The floor is littered with worthless shards of pottery.");
-    new_note("The Ming vase drops with a delicate crash.");
+    new_note("There is a delicate, precious, Ming vase here!");           // prop 0
+    new_note("The vase is now resting, delicately, on a velvet pillow."); // prop 1
+    new_note("The floor is littered with worthless shards of pottery.");  // prop 2
+    new_note("The Ming vase drops with a delicate crash.");               // prop 3
     new_obj(TRIDENT, "Jeweled trident", 0, falls);
-    new_note("There is a jewel-encrusted trident here!");
+    new_note("There is a jewel-encrusted trident here!");           // prop 0
     new_obj(EGGS, "Golden eggs", 0, giant);
-    new_note("There is a large nest here, full of golden eggs!");
-    new_note("The nest of golden eggs has vanished!");
-    new_note("Done!");
+    new_note("There is a large nest here, full of golden eggs!");   // prop 0
+    new_note("The nest of golden eggs has vanished!");              // prop 1
+    new_note("Done!");                                              // prop 2
     new_obj(CHEST, "Treasure chest", 0, limbo);
-    new_note("The pirate's treasure chest is here!");
+    new_note("The pirate's treasure chest is here!");               // prop 0
     new_obj(COINS, "Rare coins", 0, west);
-    new_note("There are many coins here!");
+    new_note("There are many coins here!");                         // prop 0
     new_obj(JEWELS, "Precious jewelry", 0, south);
-    new_note("There is precious jewelry here!");
+    new_note("There is precious jewelry here!");                    // prop 0 
     new_obj(SILVER, "Bars of silver", 0, ns);
-    new_note("There are bars of silver here!");
+    new_note("There are bars of silver here!");                     // prop 0
     new_obj(DIAMONDS, "Several diamonds", 0, wfiss);
-    new_note("There are diamonds here!");
+    new_note("There are diamonds here!");                           // prop 0
     new_obj(GOLD, "Large gold nugget", 0, nugget);
-    new_note("There is a large sparkling nugget of gold here!");
+    new_note("There is a large sparkling nugget of gold here!");    // prop 0
     new_obj(MOSS, 0, MOSS, soft);
-    new_note(nullptr);
+    new_note(nullptr);                                              // prop 0
     new_obj(BATTERIES, "Batteries", 0, limbo);
-    new_note("There are fresh batteries here.");
-    new_note("Some worn-out batteries have been discarded nearby.");
+    new_note("There are fresh batteries here.");                      // prop 0
+    new_note("Some worn-out batteries have been discarded nearby.");  // prop 1
     new_obj(PONY, 0, PONY, pony);
     new_note("There is a massive vending machine here.  The instructions on it read:\n"
-             "\"Drop coins here to receive fresh batteries.\"");
+             "\"Drop coins here to receive fresh batteries.\"");     // prop 0
     new_obj(GEYSER, 0, GEYSER, view);
-    new_note(nullptr);
+    new_note(nullptr);                                               // prop 0
     new_obj(MESSAGE, 0, MESSAGE, limbo);
     new_note("There is a message scrawled in the dust in a flowery script, reading:\n"
-             "\"This is not the maze where the pirate leaves his treasure chest.\"");
+             "\"This is not the maze where the pirate leaves his treasure chest.\"");  // prop 0
     new_obj(BEAR, 0, BEAR, barr);
-    new_note("There is a ferocious cave bear eying you from the far end of the room!");
-    new_note("There is a gentle cave bear sitting placidly in one corner.");
-    new_note("There is a contented-looking bear wandering about nearby.");
-    new_note(nullptr);
+    new_note("There is a ferocious cave bear eying you from the far end of the room!");  // prop 0
+    new_note("There is a gentle cave bear sitting placidly in one corner.");             // prop 1
+    new_note("There is a contented-looking bear wandering about nearby.");               // prop 2
+    new_note(nullptr);                                                                   // prop 3
     new_obj(PIRATE, 0, PIRATE, limbo);
-    new_note(nullptr);
+    new_note(nullptr);                               // prop 0
     new_obj(ART, 0, ART, oriental);
-    new_note(nullptr);
+    new_note(nullptr);                               // prop 0
     new_obj(AXE, "Dwarf's axe", 0, limbo);
-    new_note("There is a little axe here.");
-    new_note("There is a little axe lying beside the bear.");
+    new_note("There is a little axe here.");                  // prop 0
+    new_note("There is a little axe lying beside the bear."); // prop 1
     new_obj(STALACTITE, 0, STALACTITE, tite);
-    new_note(nullptr);
+    new_note(nullptr);                                        // prop 0
     new_obj(PLANT, 0, PLANT, wpit);
     new_note("There is a tiny little plant in the pit, murmuring \"Water, water, "
-             "...\"");
-    new_note("The plant spurts into furious growth for a few seconds.");
+             "...\"");                                                           // prop 0
+    new_note("The plant spurts into furious growth for a few seconds.");         // prop 1
     new_note("There is a 12-foot-tall beanstalk stretching up out of the pit,\n"
-             "bellowing \"Water!!  Water!!\"");
-    new_note("The plant grows explosively, almost filling the bottom of the pit.");
-    new_note("There is a gigantic beanstalk stretching all the way up to the hole.");
-    new_note("You've over-watered the plant!  It's shriveling up!  It's, it's...");
+             "bellowing \"Water!!  Water!!\"");                                  // prop 2
+    new_note("The plant grows explosively, almost filling the bottom of the pit.");   // prop 3
+    new_note("There is a gigantic beanstalk stretching all the way up to the hole."); // prop 4
+    new_note("You've over-watered the plant!  It's shriveling up!  It's, it's...");   // prop 5
     new_obj(MIRROR, 0, MIRROR, mirror);
     new_note(nullptr);
     new_obj(OIL, "Oil in the bottle", 0, limbo);
     new_obj(WATER, "Water in the bottle", 0, limbo);
     new_obj(BOTTLE, "Small bottle", 0, house);
-    new_note("There is a bottle of water here.");
-    new_note("There is an empty bottle here.");
-    new_note("There is a bottle of oil here.");
+    new_note("There is a bottle of water here."); // prop 0
+    new_note("There is an empty bottle here.");   // prop 1
+    new_note("There is a bottle of oil here.");    // prop 2
     new_obj(FOOD, "Tasty food", 0, house);
-    new_note("There is food here.");
+    new_note("There is food here.");          // prop 0
     new_obj(KNIFE, 0, 0, limbo);
     new_obj(DWARF, 0, DWARF, limbo);
     new_obj(MAG, "\"Spelunker Today\"", 0, ante);
