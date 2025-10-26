@@ -46,5 +46,4 @@ down a gully.
 ## Notes
 
 * Written in standard C23 and compatible with Clang 17+.
-* Includes minor modernization (e.g. bool, const, static inline, Makefile).
 * Game logic and text remain faithful to the original.

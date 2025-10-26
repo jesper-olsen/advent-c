@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include "object.h"
 
 constexpr int HASH_PRIME = 1009;
 #define travel_size 740
@@ -76,16 +77,16 @@ constexpr int HASH_PRIME = 1009;
 constexpr int MAX_SCORE = 350;
 constexpr int HIGHEST_CLASS = 8;
 
-typedef enum: uint16_t {
-    lighted = 1<<0,
-    oil     = 1<<1,
-    liquid  = 1<<2,
-    cave_hint = 1<<3,
-    bird_hint = 1<<4,
-    snake_hint = 1<<5,
-    twist_hint = 1<<6,
-    dark_hint = 1<<7,
-    witt_hint = 1<<8,
+typedef enum : uint16_t {
+    lighted = 1 << 0,
+    oil     = 1 << 1,
+    liquid  = 1 << 2,
+    cave_hint = 1 << 3,
+    bird_hint = 1 << 4,
+    snake_hint = 1 << 5,
+    twist_hint = 1 << 6,
+    dark_hint = 1 << 7,
+    witt_hint = 1 << 8,
 } BitFlags;
 
 typedef enum {
@@ -112,22 +113,6 @@ typedef enum {
     PLUGH, PLOVER, OFFICE, NOWHERE
 } motion;
 
-typedef enum : int {
-    NOTHING, KEYS, LAMP, GRATE, GRATE_, CAGE, ROD, ROD2, TREADS, TREADS_, BIRD, DOOR,
-    PILLOW, SNAKE, CRYSTAL, CRYSTAL_, TABLET, CLAM, OYSTER, MAG, DWARF, KNIFE, FOOD,
-    BOTTLE, WATER, OIL, MIRROR, MIRROR_, PLANT, PLANT2, PLANT2_, STALACTITE, SHADOW,
-    SHADOW_, AXE, ART, PIRATE, DRAGON, DRAGON_, BRIDGE, BRIDGE_, TROLL, TROLL_, TROLL2, TROLL2_,
-    BEAR, MESSAGE, GEYSER, PONY, BATTERIES, MOSS, GOLD, DIAMONDS, SILVER, JEWELS, COINS, CHEST,
-    EGGS, TRIDENT, VASE, EMERALD, PYRAMID, PEARL, RUG, RUG_, SPICES, CHAIN
-} object;
-
-constexpr object max_obj = CHAIN;
-constexpr object min_treasure = GOLD;
-
-static inline bool is_treasure(object t) {
-    return t >= min_treasure;
-}
-
 typedef enum {
     ABSTAIN, TAKE, DROP, OPEN, CLOSE, ON, OFF, WAVE, CALM, GO, RELAX, POUR, EAT, DRINK, RUB,
     TOSS, WAKE, FEED, FILL, BREAK, BLAST, KILL, SAY, READ, FEEFIE, BRIEF, FIND, INVENTORY,
@@ -140,8 +125,8 @@ enum {
     STOP, INFO, SWIM
 } MessageTriggers;
 
-char const* const pitch_dark_msg = "It is now pitch dark.  If you proceed you will most likely fall into a pit.";
-const char* const ok = "OK.";
+char const *const pitch_dark_msg = "It is now pitch dark.  If you proceed you will most likely fall into a pit.";
+const char *const ok = "OK.";
 
 char const *const message[13] = {
     [MAGIC] = "Good try, but that is an old worn-out magic word.",
@@ -287,7 +272,7 @@ instruction *start[max_loc + 2];
 const char *long_desc[max_loc + 1];
 const char *short_desc[max_loc + 1];
 int flags[max_loc + 1]; // bitmaps for special properties
-char const* const remarks[REM_SIZE] = {
+char const *const remarks[REM_SIZE] = {
     [1] = "You don't fit through a two-inch slit!",
     [2] = "You can't go through a locked steel grate!",
     [3] = "I respectfully suggest you go across the bridge instead of jumping.",
@@ -307,8 +292,8 @@ char const* const remarks[REM_SIZE] = {
 };
 int visits[max_loc + 1]; // how often have you been here?
 
-char const* const all_alike = "You are in a maze of twisty little passages, all alike.";
-char const* const dead_end = "Dead end.";
+char const *const all_alike = "You are in a maze of twisty little passages, all alike.";
+char const *const dead_end = "Dead end.";
 int slit_rmk, grate_rmk, bridge_rmk, loop_rmk;
 
 object first[max_loc + 1];  // first object present at a location
@@ -322,15 +307,7 @@ static inline bool toting(object t) {
     return place[t] < 0;
 }
 
-char const* name[max_obj + 1]; // name of object for inventory listing
-char const* note[100];         // description of object properties
-int offset[max_obj + 1];       // where notes for each object start
 int holding;                   // number of objects with prop[t]<0
-size_t n_notes = 0;
-
-static inline void new_note(const char* n) {
-    note[n_notes++] = n;
-}
 
 constexpr int BUF_SIZE = 72;
 char buffer[BUF_SIZE];
@@ -359,7 +336,7 @@ int lost_treasures;
 bool gave_up;
 int limit;
 
-char const*const incantation[] = {"fee", "fie", "foe", "foo", "fum"};
+char const *const incantation[] = {"fee", "fie", "foe", "foo", "fum"};
 int foobar;
 
 int look_count;
@@ -431,7 +408,7 @@ char const *const hint_prompt[n_hints] = {
     [7] = "Do you need help getting out of here?"
 };
 
-char const* const hint[n_hints] = {
+char const *const hint[n_hints] = {
     [0] = "Somewhere nearby is Colossal Cave, where others have found fortunes in\n"
           "treasure and gold, though it is rumored that some who enter are never\n"
           "seen again.  Magic is said to work in the cave.  I will be your eyes\n"
@@ -567,10 +544,8 @@ bool is_at_loc(object t) {
     return false;
 }
 
-void new_obj(object t, const char* n, object b, location l) {
-    name[t] = n;
+void new_obj(object t, object b, location l) {
     base[t] = b;
-    offset[t] = n_notes;
     prop[t] = (is_treasure(t) ? -1 : 0);
     drop(t, l);
 }
@@ -2320,170 +2295,72 @@ It would be advisable to use the exit.",
         exit(-1);
     }
 
-    // One note per object property (sometimes "")
-    new_obj(RUG_, 0, RUG, scan3);
-    new_obj(RUG, "Persian rug", RUG, scan1);
-    new_note("There is a Persian rug spread out on the floor!"); // RUG_,RUG: prop 0
-    new_note("The dragon is sprawled out on a Persian rug!!");   //           prop 1
-    new_obj(TROLL2_, 0, TROLL2, limbo);
-    new_obj(TROLL2, 0, TROLL2, limbo);
-    new_note("The troll is nowhere to be seen.");                // TROLL2_, TROLL2: prop 0
-    new_obj(TROLL_, 0, TROLL, neside);
-    new_obj(TROLL, 0, TROLL, swside);
-    new_note("A burly troll stands by the bridge and insists you throw him a\n"
-             "treasure before you may cross.");                  // TROLL_, TROLL: prop 0
-    new_note("The troll steps out from beneath the bridge and blocks your way."); // TROLL_,TROLL: prop 1
-    new_note(nullptr);  // prop 2
-    new_obj(BRIDGE_, 0, BRIDGE, neside);
-    new_obj(BRIDGE, 0, BRIDGE, swside);
-    new_note("A rickety wooden bridge extends across the chasm, vanishing into the\n"
-             "mist.  A sign posted on the bridge reads, \"STOP!  PAY TROLL!\"");      // BRIDGE_, BRIDGE: prop 0
-    new_note("The wreckage of a bridge (and a dead bear) can be seen at the bottom of the chasm."); // prop 1
-    new_obj(DRAGON_, 0, DRAGON, scan3);
-    new_obj(DRAGON, 0, DRAGON, scan1);
-    new_note("A huge green fierce dragon bars the way!");   // DRAGON: prop 0
-    new_note("Congratulations!  You have just vanquished a dragon with your bare\n"
-             "hands! (Unbelievable, isn't it?)");           // DRAGON: prop 1
-    new_note("The body of a huge green dead dragon is lying off to one side."); // DRAGON: prop 3
-    new_obj(SHADOW_, 0, SHADOW, window);
-    new_obj(SHADOW, 0, SHADOW, windoe);
-    new_note("The shadowy figure seems to be trying to attract your attention."); // prop 0
-    new_obj(PLANT2_, 0, PLANT2, e2pit);
-    new_obj(PLANT2, 0, PLANT2, w2pit);
-    new_note(nullptr);                                                 // PLANT2: prop 0
-    new_note("The top of a 12-foot-tall beanstalk is poking out of the west pit."); // PLANT2: prop 1
-    new_note("There is a huge beanstalk growing out of the west pit up to the hole."); // PLANT2: prop 2
-    new_obj(CRYSTAL_, 0, CRYSTAL, wfiss);
-    new_obj(CRYSTAL, 0, CRYSTAL, efiss);
-    new_note(nullptr);           // prop 0
-    new_note("A crystal bridge now spans the fissure."); // prop 1
-    new_note("The crystal bridge has vanished!");    // prop 2
-    new_obj(TREADS_, 0, TREADS, emist);
-    new_obj(TREADS, 0, TREADS, spit);
-    new_note("Rough stone steps lead down the pit."); // TREADS_,TREADS prop 0
-    new_note("Rough stone steps lead up the dome.");  // TREADS_,TREADS prop 1
-    new_obj(GRATE_, 0, GRATE, inside);
-    new_obj(GRATE, 0, GRATE, outside);
-    new_note("The grate is locked.");      // GRATE_,GRATE: prop 0
-    new_note("The grate is open.");        // GRATE_,GRATE: prop 1
-    new_obj(MIRROR_, 0, MIRROR, limbo);
-
-    new_obj(CHAIN, "Golden chain", CHAIN, barr);
-    new_note("There is a golden chain lying in a heap on the floor!"); // CHAIN prop 0
-    new_note("The bear is locked to the wall with a golden chain!");   // CHAIN prop 1
-    new_note("There is a golden chain locked to the wall!");           // CHAIN prop 2
-    new_obj(SPICES, "Rare spices", 0, chamber);
-    new_note("There are rare spices here!");         // prop 0
-    new_obj(PEARL, "Glistening pearl", 0, limbo);
-    new_note("Off to one side lies a glistening pearl!"); // prop 0
-    new_obj(PYRAMID, "Platinum pyramid", 0, droom);
-    new_note("There is a platinum pyramid here, 8 inches on a side!");  // prop 0
-    new_obj(EMERALD, "Egg-sized emerald", 0, proom);
-    new_note("There is an emerald here the size of a plover's egg!");   // prop 0
-    new_obj(VASE, "Ming vase", 0, oriental);
-    new_note("There is a delicate, precious, Ming vase here!");           // prop 0
-    new_note("The vase is now resting, delicately, on a velvet pillow."); // prop 1
-    new_note("The floor is littered with worthless shards of pottery.");  // prop 2
-    new_note("The Ming vase drops with a delicate crash.");               // prop 3
-    new_obj(TRIDENT, "Jeweled trident", 0, falls);
-    new_note("There is a jewel-encrusted trident here!");           // prop 0
-    new_obj(EGGS, "Golden eggs", 0, giant);
-    new_note("There is a large nest here, full of golden eggs!");   // prop 0
-    new_note("The nest of golden eggs has vanished!");              // prop 1
-    new_note("Done!");                                              // prop 2
-    new_obj(CHEST, "Treasure chest", 0, limbo);
-    new_note("The pirate's treasure chest is here!");               // prop 0
-    new_obj(COINS, "Rare coins", 0, west);
-    new_note("There are many coins here!");                         // prop 0
-    new_obj(JEWELS, "Precious jewelry", 0, south);
-    new_note("There is precious jewelry here!");                    // prop 0
-    new_obj(SILVER, "Bars of silver", 0, ns);
-    new_note("There are bars of silver here!");                     // prop 0
-    new_obj(DIAMONDS, "Several diamonds", 0, wfiss);
-    new_note("There are diamonds here!");                           // prop 0
-    new_obj(GOLD, "Large gold nugget", 0, nugget);
-    new_note("There is a large sparkling nugget of gold here!");    // prop 0
-    new_obj(MOSS, 0, MOSS, soft);
-    new_note(nullptr);                                              // prop 0
-    new_obj(BATTERIES, "Batteries", 0, limbo);
-    new_note("There are fresh batteries here.");                      // prop 0
-    new_note("Some worn-out batteries have been discarded nearby.");  // prop 1
-    new_obj(PONY, 0, PONY, pony);
-    new_note("There is a massive vending machine here.  The instructions on it read:\n"
-             "\"Drop coins here to receive fresh batteries.\"");     // prop 0
-    new_obj(GEYSER, 0, GEYSER, view);
-    new_note(nullptr);                                               // prop 0
-    new_obj(MESSAGE, 0, MESSAGE, limbo);
-    new_note("There is a message scrawled in the dust in a flowery script, reading:\n"
-             "\"This is not the maze where the pirate leaves his treasure chest.\"");  // prop 0
-    new_obj(BEAR, 0, BEAR, barr);
-    new_note("There is a ferocious cave bear eying you from the far end of the room!");  // prop 0
-    new_note("There is a gentle cave bear sitting placidly in one corner.");             // prop 1
-    new_note("There is a contented-looking bear wandering about nearby.");               // prop 2
-    new_note(nullptr);                                                                   // prop 3
-    new_obj(PIRATE, 0, PIRATE, limbo);
-    new_note(nullptr);                               // prop 0
-    new_obj(ART, 0, ART, oriental);
-    new_note(nullptr);                               // prop 0
-    new_obj(AXE, "Dwarf's axe", 0, limbo);
-    new_note("There is a little axe here.");                  // prop 0
-    new_note("There is a little axe lying beside the bear."); // prop 1
-    new_obj(STALACTITE, 0, STALACTITE, tite);
-    new_note(nullptr);                                        // prop 0
-    new_obj(PLANT, 0, PLANT, wpit);
-    new_note("There is a tiny little plant in the pit, murmuring \"Water, water, "
-             "...\"");                                                           // prop 0
-    new_note("The plant spurts into furious growth for a few seconds.");         // prop 1
-    new_note("There is a 12-foot-tall beanstalk stretching up out of the pit,\n"
-             "bellowing \"Water!!  Water!!\"");                                  // prop 2
-    new_note("The plant grows explosively, almost filling the bottom of the pit.");   // prop 3
-    new_note("There is a gigantic beanstalk stretching all the way up to the hole."); // prop 4
-    new_note("You've over-watered the plant!  It's shriveling up!  It's, it's...");   // prop 5
-    new_obj(MIRROR, 0, MIRROR, mirror);
-    new_note(nullptr);
-    new_obj(OIL, "Oil in the bottle", 0, limbo);
-    new_obj(WATER, "Water in the bottle", 0, limbo);
-    new_obj(BOTTLE, "Small bottle", 0, house);
-    new_note("There is a bottle of water here."); // prop 0
-    new_note("There is an empty bottle here.");   // prop 1
-    new_note("There is a bottle of oil here.");    // prop 2
-    new_obj(FOOD, "Tasty food", 0, house);
-    new_note("There is food here.");          // prop 0
-    new_obj(KNIFE, 0, 0, limbo);
-    new_obj(DWARF, 0, DWARF, limbo);
-    new_obj(MAG, "\"Spelunker Today\"", 0, ante);
-    new_note("There are a few recent issues of \"Spelunker Today\" magazine here.");
-    new_obj(OYSTER, "Giant oyster >GROAN!<", 0, limbo);
-    new_note("There is an enormous oyster here with its shell tightly closed.");
-    new_note("Interesting.  There seems to be something written "
-             "on the underside of\nthe oyster.");
-    new_obj(CLAM, "Giant clam >GRUNT!<", 0, shell);
-    new_note("There is an enormous clam here with its shell tightly closed.");
-    new_obj(TABLET, 0, TABLET, droom);
-    new_note("A massive stone tablet embedded in the wall reads:\n"
-             "\"CONGRATULATIONS ON BRINGING LIGHT INTO THE DARK-ROOM!\"");
-    new_obj(SNAKE, 0, SNAKE, hmk);
-    new_note("A huge green fierce snake bars the way!");
-    new_note(nullptr);
-    new_obj(PILLOW, "Velvet pillow", 0, soft);
-    new_note("A small velvet pillow lies on the floor.");
-    new_obj(DOOR, 0, DOOR, immense);
-    new_note("The way north is barred by a massive, rusty, iron door.");
-    new_note("The way north leads through a massive, rusty, iron door.");
-    new_obj(BIRD, "Little bird in cage", 0, bird);
-    new_note("A cheerful little bird is sitting here singing.");
-    new_note("There is a little bird in the cage.");
-    new_obj(ROD2, "Black rod", 0, limbo);
-    new_note("A three-foot black rod with a rusty mark on an end lies nearby.");
-    new_obj(ROD, "Black rod", 0, debris);
-    new_note("A three-foot black rod with a rusty star on an end lies nearby.");
-    new_obj(CAGE, "Wicker cage", 0, cobbles);
-    new_note("There is a small wicker cage discarded nearby.");
-    new_obj(LAMP, "Brass lantern", 0, house);
-    new_note("There is a shiny brass lamp nearby.");
-    new_note("There is a lamp shining nearby.");
-    new_obj(KEYS, "Set of keys", 0, house);
-    new_note("There are some keys on the ground here.");
+    new_obj(RUG_, RUG, scan3);
+    new_obj(RUG, RUG, scan1);
+    new_obj(TROLL2_, TROLL2, limbo);
+    new_obj(TROLL2, TROLL2, limbo);
+    new_obj(TROLL_, TROLL, neside);
+    new_obj(TROLL, TROLL, swside);
+    new_obj(BRIDGE_, BRIDGE, neside);
+    new_obj(BRIDGE, BRIDGE, swside);
+    new_obj(DRAGON_, DRAGON, scan3);
+    new_obj(DRAGON, DRAGON, scan1);
+    new_obj(SHADOW_, SHADOW, window);
+    new_obj(SHADOW, SHADOW, windoe);
+    new_obj(PLANT2_, PLANT2, e2pit);
+    new_obj(PLANT2, PLANT2, w2pit);
+    new_obj(CRYSTAL_, CRYSTAL, wfiss);
+    new_obj(CRYSTAL, CRYSTAL, efiss);
+    new_obj(TREADS_, TREADS, emist);
+    new_obj(TREADS, TREADS, spit);
+    new_obj(GRATE_, GRATE, inside);
+    new_obj(GRATE, GRATE, outside);
+    new_obj(MIRROR_, MIRROR, limbo);
+    new_obj(CHAIN, CHAIN, barr);
+    new_obj(SPICES, 0, chamber);
+    new_obj(PEARL, 0, limbo);
+    new_obj(PYRAMID, 0, droom);
+    new_obj(EMERALD, 0, proom);
+    new_obj(VASE, 0, oriental);
+    new_obj(TRIDENT, 0, falls);
+    new_obj(EGGS, 0, giant);
+    new_obj(CHEST, 0, limbo);
+    new_obj(COINS, 0, west);
+    new_obj(JEWELS, 0, south);
+    new_obj(SILVER, 0, ns);
+    new_obj(DIAMONDS, 0, wfiss);
+    new_obj(GOLD, 0, nugget);
+    new_obj(MOSS, MOSS, soft);
+    new_obj(BATTERIES, 0, limbo);
+    new_obj(PONY, PONY, pony);
+    new_obj(GEYSER, GEYSER, view);
+    new_obj(MESSAGE, MESSAGE, limbo);
+    new_obj(BEAR, BEAR, barr);
+    new_obj(PIRATE, PIRATE, limbo);
+    new_obj(ART, ART, oriental);
+    new_obj(AXE, 0, limbo);
+    new_obj(STALACTITE, STALACTITE, tite);
+    new_obj(PLANT, PLANT, wpit);
+    new_obj(MIRROR, MIRROR, mirror);
+    new_obj(OIL, 0, limbo);
+    new_obj(WATER, 0, limbo);
+    new_obj(BOTTLE, 0, house);
+    new_obj(FOOD, 0, house);
+    new_obj(KNIFE, 0, limbo);
+    new_obj(DWARF, DWARF, limbo);
+    new_obj(MAG, 0, ante);
+    new_obj(OYSTER, 0, limbo);
+    new_obj(CLAM, 0, shell);
+    new_obj(TABLET, TABLET, droom);
+    new_obj(SNAKE, SNAKE, hmk);
+    new_obj(PILLOW, 0, soft);
+    new_obj(DOOR, DOOR, immense);
+    new_obj(BIRD, 0, bird);
+    new_obj(ROD2, 0, limbo);
+    new_obj(ROD, 0, debris);
+    new_obj(CAGE, 0, cobbles);
+    new_obj(LAMP, 0, house);
+    new_obj(KEYS, 0, house);
 
     oldoldloc = oldloc = loc = newloc = road;
 
@@ -2667,7 +2544,7 @@ commence:
                 }
                 if (tt == TREADS && toting(GOLD))
                     continue;
-                p = note[prop[tt] + offset[tt] + (tt == TREADS && loc == emist)];
+                const char *p = get_note(tt, prop[tt] + (tt == TREADS && loc == emist));
                 if (p)
                     printf("%s\n", p);
             }
@@ -2725,9 +2602,10 @@ bypass:
                 knife_loc = limbo;
 
             if (closed) {
-                if (prop[OYSTER] < 0 && toting(OYSTER))
-                    printf("%s\n", note[offset[OYSTER] + 1]);
-                for (j = 1; j <= max_obj; j++)
+                if (prop[OYSTER] < 0 && toting(OYSTER)) {
+                    printf("%s\n", get_note(OYSTER, 1));
+                }
+                for (size_t j = 1; j <= max_obj; j++)
                     if (toting(j) && prop[j] < 0)
                         prop[j] = -1 - prop[j];
             }
@@ -3036,7 +2914,7 @@ intransitive:
                     if (toting(t) && (base[t] == NOTHING || base[t] == t) && t != BEAR) {
                         if (k == 0)
                             k = 1, printf("You are currently holding the following:\n");
-                        printf(" %s\n", name[t]);
+                        printf(" %s\n", obj_name[t]);
                     }
                 if (toting(BEAR))
                     report("You are being followed by a very large, tame bear.");
@@ -3080,7 +2958,8 @@ nada_sucede:
                         prop[TROLL] = 1;
                     k = (loc == giant ? 0 : here(EGGS) ? 1 : 2);
                     move(EGGS, giant);
-                    report(note[offset[EGGS] + k]);
+                    const char *p = get_note(EGGS, k);
+                    report(p);
                 }
                 if (foobar == 0)
                     goto nada_sucede;
@@ -3137,7 +3016,8 @@ transitive:
                     default_to(DROP);
                 }
                 prop[CRYSTAL] = 1 - prop[CRYSTAL];
-                report(note[offset[CRYSTAL] + 2 - prop[CRYSTAL]]);
+                const char *p = get_note(CRYSTAL, 2 - prop[CRYSTAL]);
+                report(p);
 
             case BLAST:
                 if (closed && prop[ROD2] >= 0) {
@@ -3237,7 +3117,8 @@ smash:
                     if (obj != WATER)
                         report("The plant indignantly shakes the oil off its leaves "
                                "and asks, \"Water?\"");
-                    printf("%s\n", note[prop[PLANT] + 1 + offset[PLANT]]);
+                    const char *p = get_note(PLANT, 1 + prop[PLANT]);
+                    printf("%s\n", p);
                     prop[PLANT] += 2;
                     if (prop[PLANT] > 4)
                         prop[PLANT] = 0;
@@ -3336,7 +3217,7 @@ smash:
                     destroy(COINS);
                     drop(BATTERIES, loc);
                     prop[BATTERIES] = 0;
-                    report(note[offset[BATTERIES]]);
+                    report(get_note(BATTERIES, 0));
                 }
                 if (obj == BIRD) {
                     if (here(SNAKE)) {
@@ -3361,7 +3242,8 @@ smash:
 
                 if (obj == VASE && loc != soft) {
                     prop[VASE] = (place[PILLOW] == loc ? 0 : 2);
-                    printf("%s\n", note[offset[VASE] + 1 + prop[VASE]]);
+                    const char *pnote = get_note(VASE, 1 + prop[VASE]);
+                    printf("%s\n", pnote);
                     k = 1;
                     if (prop[VASE])
                         base[VASE] = VASE;
@@ -3498,7 +3380,8 @@ smash:
                         };
                         if (!(streq(word1, "yes") || streq(word1, "y")))
                             goto pre_parse;
-                        printf("%s\n", note[offset[DRAGON] + 1]);
+                        const char *p = get_note(DRAGON, 1);
+                        printf("%s\n", p);
                         prop[DRAGON] = 2;
                         prop[RUG] = 0;
                         base[RUG] = NOTHING;
@@ -3848,7 +3731,8 @@ stay:
                 destroy(TROLL2_);
                 move(BRIDGE, swside);
                 move(BRIDGE_, neside);
-                printf("%s\n", note[offset[TROLL] + 1]);
+                const char *p = get_note(TROLL, 1);
+                printf("%s\n", p);
                 goto stay;
             }
             newloc = neside + swside - loc;
@@ -3913,7 +3797,7 @@ quit:
     k = score();
     printf("You scored %d point%s out of a possible %d, using %d turn%s.\n", k,
            k == 1 ? "" : "s", MAX_SCORE, turns, turns == 1 ? "" : "s");
-    for (size_t j = 0; CLASS_SCORE[j] < k; j++)
+    for (j = 0; CLASS_SCORE[j] < k; j++)
         ;
 
     printf("%s\nTo achieve the next higher rating", CLASS_MESSAGE[j]);
