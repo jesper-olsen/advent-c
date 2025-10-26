@@ -326,7 +326,7 @@ char const* name[max_obj + 1]; // name of object for inventory listing
 char const* note[100];         // description of object properties
 int offset[max_obj + 1];       // where notes for each object start
 int holding;                   // number of objects with prop[t]<0
-int n_notes = 0;
+size_t n_notes = 0;
 
 static inline void new_note(const char* n) {
     note[n_notes++] = n;
@@ -2336,7 +2336,7 @@ It would be advisable to use the exit.",
     new_note(nullptr);  // prop 2
     new_obj(BRIDGE_, 0, BRIDGE, neside);
     new_obj(BRIDGE, 0, BRIDGE, swside);
-    new_note("A rickety wooden bridge extends across the chasm, vanishing into the\n" 
+    new_note("A rickety wooden bridge extends across the chasm, vanishing into the\n"
              "mist.  A sign posted on the bridge reads, \"STOP!  PAY TROLL!\"");      // BRIDGE_, BRIDGE: prop 0
     new_note("The wreckage of a bridge (and a dead bear) can be seen at the bottom of the chasm."); // prop 1
     new_obj(DRAGON_, 0, DRAGON, scan3);
@@ -2396,7 +2396,7 @@ It would be advisable to use the exit.",
     new_obj(COINS, "Rare coins", 0, west);
     new_note("There are many coins here!");                         // prop 0
     new_obj(JEWELS, "Precious jewelry", 0, south);
-    new_note("There is precious jewelry here!");                    // prop 0 
+    new_note("There is precious jewelry here!");                    // prop 0
     new_obj(SILVER, "Bars of silver", 0, ns);
     new_note("There are bars of silver here!");                     // prop 0
     new_obj(DIAMONDS, "Several diamonds", 0, wfiss);
