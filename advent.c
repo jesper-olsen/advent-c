@@ -125,7 +125,8 @@ enum {
     STOP, INFO, SWIM
 } MessageTriggers;
 
-char const *const pitch_dark_msg = "It is now pitch dark.  If you proceed you will most likely fall into a pit.";
+char const *const pitch_dark_msg = "It is now pitch dark.  "
+                                   "If you proceed you will most likely fall into a pit.";
 const char *const ok = "OK.";
 
 char const *const message[13] = {
@@ -969,9 +970,9 @@ int main() {
     new_word("stop", STOP);
     new_word("info", INFO);
     new_word("infor", INFO);
-    new_word("swim", SWIM),
+    new_word("swim", SWIM);
 
-             q = travels;
+    q = travels;
     make_loc(
         road,
         "You are standing at the end of a road before a small brick building.\n"
