@@ -620,7 +620,7 @@ char const *get_description_short(location loc) {
 }
 
 // bitmaps for special properties
-const int flags[max_loc + 1] = {
+const uint16_t flags[max_loc + 1] = {
     [road] = lighted + liquid,
     [hill] = lighted,
     [house] = lighted + liquid,
