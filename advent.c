@@ -4,14 +4,12 @@
 #include <string.h>
 #include <time.h>
 #include "object.h"
+#include "location.h"
 
 constexpr int HASH_PRIME = 1009;
 #define travel_size 740
-#define make_loc(x, l, s, f)                                                   \
+#define make_loc(x)                                                            \
   {                                                                            \
-    long_desc[x] = l;                                                          \
-    short_desc[x] = s;                                                         \
-    flags[x] = f;                                                              \
     start[x] = q;                                                              \
   }
 #define make_inst(m, c, d)                                                     \
@@ -31,8 +29,8 @@ constexpr int HASH_PRIME = 1009;
 #define holds(o) (100 + (o))
 #define sees(o) (200 + (o))
 #define not(o, k) (300 + (o) + 100 * (k))
-#define twist(l, n, s, e, w, ne, se, nw, sw, u, d, m)                          \
-  make_loc(l, m, 0, 0);                                                        \
+#define twist(l, n, s, e, w, ne, se, nw, sw, u, d)                             \
+  make_loc(l);                                                              \
   make_inst(N, 0, n);                                                          \
   make_inst(S, 0, s);                                                          \
   make_inst(E, 0, e);                                                          \
@@ -76,18 +74,6 @@ constexpr int HASH_PRIME = 1009;
 #define closing (clock1 < 0)
 constexpr int MAX_SCORE = 350;
 constexpr int HIGHEST_CLASS = 8;
-
-typedef enum : uint16_t {
-    lighted = 1 << 0,
-    oil     = 1 << 1,
-    liquid  = 1 << 2,
-    cave_hint = 1 << 3,
-    bird_hint = 1 << 4,
-    snake_hint = 1 << 5,
-    twist_hint = 1 << 6,
-    dark_hint = 1 << 7,
-    witt_hint = 1 << 8,
-} BitFlags;
 
 typedef enum {
     no_type,
@@ -231,24 +217,6 @@ char const *const default_msg[] = {
     [QUIT] = "Eh?",
 };
 
-typedef enum {
-    inhand = -1, limbo, road, hill, house, valley, forest, woods, slit, outside,
-    inside, cobbles, debris, awk, bird, spit, emist, nugget, efiss, wfiss, wmist,
-    like1, like2, like3, like4, like5, like6, like7, like8, like9, like10, like11, like12, like13, like14,
-    brink, elong, wlong,
-    diff0, diff1, diff2, diff3, diff4, diff5, diff6, diff7, diff8, diff9, diff10,
-    pony, cross, hmk, west, south, ns, y2, jumble, windoe, dirty, clean, wet, dusty,
-    complex, shell, arch, ragged, sac, ante, witt, bedquilt, cheese, soft, e2pit, w2pit, epit,
-    wpit, narrow, giant, block, immense, falls, steep, abovep, sjunc, tite, low, crawl, window,
-    oriental, misty, alcove, proom, droom, slab, abover, mirror, res, scan1, scan2, scan3,
-    secret, wide, tight, tall, boulders, scorr, swside,
-    dead0, dead1, dead2, dead3, dead4, dead5, dead6, dead7, dead8, dead9, dead10, dead11,
-    neside, corr, fork, warm, view, chamber, lime, fbarr, barr, neend, swend, crack, neck, lose,
-    cant, climb, check, snaked, thru, duck, sewer, upnout, didit,
-    ppass, pdrop, troll
-} location;
-
-constexpr location max_loc = didit;
 constexpr location max_pirate_loc = dead2;
 constexpr location min_in_cave = inside;
 constexpr location min_lower_loc = emist;
@@ -270,9 +238,6 @@ wordtype current_type;
 
 instruction travels[travel_size];
 instruction *start[max_loc + 2];
-const char *long_desc[max_loc + 1];
-const char *short_desc[max_loc + 1];
-int flags[max_loc + 1]; // bitmaps for special properties
 char const *const remarks[REM_SIZE] = {
     [1] = "You don't fit through a two-inch slit!",
     [2] = "You can't go through a locked steel grate!",
@@ -293,8 +258,6 @@ char const *const remarks[REM_SIZE] = {
 };
 int visits[max_loc + 1]; // how often have you been here?
 
-char const *const all_alike = "You are in a maze of twisty little passages, all alike.";
-char const *const dead_end = "Dead end.";
 int slit_rmk, grate_rmk, bridge_rmk, loop_rmk;
 
 object first[max_loc + 1];  // first object present at a location
@@ -973,12 +936,7 @@ int main() {
     new_word("swim", SWIM);
 
     q = travels;
-    make_loc(
-        road,
-        "You are standing at the end of a road before a small brick building.\n"
-        "Around you is a forest.  A small stream flows out of the building and\n"
-        "down a gully.",
-        "You're at end of road again.", lighted + liquid);
+    make_loc( road );
     make_inst(W, 0, hill);
     ditto(U);
     ditto(ROAD);
@@ -995,11 +953,7 @@ int main() {
     ditto(WOODS);
     make_inst(DEPRESSION, 0, outside);
 
-    make_loc(
-        hill,
-        "You have walked up a hill, still in the forest.  The road slopes back\n"
-        "down the other side of the hill.  There is a building in the distance.",
-        "You're at hill in road.", lighted);
+    make_loc( hill );
     make_inst(ROAD, 0, road);
     ditto(HOUSE);
     ditto(FORWARD);
@@ -1009,8 +963,7 @@ int main() {
     ditto(N);
     ditto(S);
 
-    make_loc(house, "You are inside a building, a well house for a large spring.",
-             "You're inside building.", lighted + liquid);
+    make_loc(house );
     make_inst(ENTER, 0, road);
     ditto(OUT);
     ditto(OUTDOORS);
@@ -1020,11 +973,7 @@ int main() {
     make_inst(DOWNSTREAM, 0, sewer);
     ditto(STREAM);
 
-    make_loc(
-        valley,
-        "You are in a valley in the forest beside a stream tumbling along a\n"
-        "rocky bed.",
-        "You're in valley.", lighted + liquid);
+    make_loc( valley );
     make_inst(UPSTREAM, 0, road);
     ditto(HOUSE);
     ditto(N);
@@ -1037,8 +986,7 @@ int main() {
     ditto(D);
     make_inst(DEPRESSION, 0, outside);
 
-    make_loc(forest, "You are in open forest, with a deep valley to one side.",
-             "You're in forest.", lighted);
+    make_loc(forest );
     make_inst(VALLEY, 0, valley);
     ditto(E);
     ditto(D);
@@ -1049,8 +997,7 @@ int main() {
     make_inst(W, 0, forest);
     ditto(S);
 
-    make_loc(woods, "You are in open forest near both a valley and a road.",
-             short_desc[forest], lighted);
+    make_loc(woods);
     make_inst(ROAD, 0, road);
     ditto(N);
     make_inst(VALLEY, 0, valley);
@@ -1060,11 +1007,7 @@ int main() {
     make_inst(WOODS, 0, forest);
     ditto(S);
 
-    make_loc(
-        slit,
-        "At your feet all the water of the stream splashes into a 2-inch slit\n"
-        "in the rock.  Downstream the streambed is bare rock.",
-        "You're at slit in streambed.", lighted + liquid);
+    make_loc( slit );
     make_inst(HOUSE, 0, road);
     make_inst(UPSTREAM, 0, valley);
     ditto(N);
@@ -1080,12 +1023,7 @@ int main() {
     ditto(D);
     slit_rmk = sayit;
 
-    make_loc(
-        outside,
-        "You are in a 20-foot depression floored with bare dirt.  Set into the\n"
-        "dirt is a strong steel grate mounted in concrete.  A dry streambed\n"
-        "leads into the depression.",
-        "You're outside grate.", lighted + cave_hint);
+    make_loc( outside);
     make_inst(WOODS, 0, forest);
     ditto(E);
     ditto(W);
@@ -1101,11 +1039,7 @@ int main() {
     grate_rmk = sayit;
     make_inst(ENTER, 0, sayit);
 
-    make_loc(
-        inside,
-        "You are in a small chamber beneath a 3x3 steel grate to the surface.\n"
-        "A low crawl over cobbles leads inwards to the west.",
-        "You're below the grate.", lighted);
+    make_loc( inside);
     make_inst(OUT, not(GRATE, 0), outside);
     ditto(OUT);
     ditto(U);
@@ -1117,11 +1051,7 @@ int main() {
     make_inst(PIT, 0, spit);
     make_inst(DEBRIS, 0, debris);
 
-    make_loc(
-        cobbles,
-        "You are crawling over cobbles in a low passage.  There is a dim light\n"
-        "at the east end of the passage.",
-        "You're in cobble crawl.", lighted);
+    make_loc(cobbles);
     make_inst(OUT, 0, inside);
     ditto(SURFACE);
     ditto(NOWHERE);
@@ -1132,13 +1062,7 @@ int main() {
     ditto(DEBRIS);
     make_inst(PIT, 0, spit);
 
-    make_loc(
-        debris,
-        "You are in a debris room filled with stuff washed in from the surface.\n"
-        "A low wide passage with cobbles becomes plugged with mud and debris\n"
-        "here, but an awkward canyon leads upward and west.  A note on the wall\n"
-        "says \"MAGIC WORD XYZZY\".",
-        "You're in debris room.", 0);
+    make_loc( debris);
     make_inst(DEPRESSION, not(GRATE, 0), outside);
     make_inst(ENTRANCE, 0, inside);
     make_inst(CRAWL, 0, cobbles);
@@ -1153,7 +1077,7 @@ int main() {
     make_inst(XYZZY, 0, house);
     make_inst(PIT, 0, spit);
 
-    make_loc(awk, "You are in an awkward sloping east/west canyon.", 0, 0);
+    make_loc(awk);
     make_inst(DEPRESSION, not(GRATE, 0), outside);
     make_inst(ENTRANCE, 0, inside);
     make_inst(D, 0, debris);
@@ -1164,12 +1088,7 @@ int main() {
     ditto(W);
     make_inst(PIT, 0, spit);
 
-    make_loc(
-        bird,
-        "You are in a splendid chamber thirty feet high.  The walls are frozen\n"
-        "rivers of orange stone.  An awkward canyon and a good passage exit\n"
-        "from east and west sides of the chamber.",
-        "You're in bird chamber.", bird_hint);
+    make_loc( bird);
     make_inst(DEPRESSION, not(GRATE, 0), outside);
     make_inst(ENTRANCE, 0, inside);
     make_inst(DEBRIS, 0, debris);
@@ -1179,11 +1098,7 @@ int main() {
     ditto(PIT);
     ditto(W);
 
-    make_loc(
-        spit,
-        "At your feet is a small pit breathing traces of white mist.  An east\n"
-        "passage ends here except for a small crack leading on.",
-        "You're at top of small pit.", 0);
+    make_loc(spit);
     make_inst(DEPRESSION, not(GRATE, 0), outside);
     make_inst(ENTRANCE, 0, inside);
     make_inst(DEBRIS, 0, debris);
@@ -1196,14 +1111,7 @@ int main() {
     make_inst(CRACK, 0, crack);
     ditto(W);
 
-    make_loc(
-        emist,
-        "You are at one end of a vast hall stretching forward out of sight to\n"
-        "the west.  There are openings to either side.  Nearby, a wide stone\n"
-        "staircase leads downward.  The hall is filled with wisps of white mist\n"
-        "swaying to and fro almost as if alive.  A cold wind blows up the\n"
-        "staircase.  There is a passage at the top of a dome behind you.",
-        "You're in Hall of Mists.", 0);
+    make_loc( emist);
     make_inst(L, 0, nugget);
     ditto(S);
     make_inst(FORWARD, 0, efiss);
@@ -1221,19 +1129,12 @@ int main() {
     make_inst(U, 0, spit);
     make_inst(Y2, 0, jumble);
 
-    make_loc(nugget,
-             "This is a low room with a crude note on the wall.  The note says,\n"
-             "\"You won't get it up the steps\".",
-             "You're in nugget of gold room.", 0);
+    make_loc(nugget);
     make_inst(HALL, 0, emist);
     ditto(OUT);
     ditto(N);
 
-    make_loc(
-        efiss,
-        "You are on the east bank of a fissure slicing clear across the hall.\n"
-        "The mist is quite thick here, and the fissure is too wide to jump.",
-        "You're on east bank of fissure.", 0);
+    make_loc( efiss);
     make_inst(HALL, 0, emist);
     ditto(E);
     bridge_rmk = sayit;
@@ -1245,9 +1146,7 @@ int main() {
     ditto(CROSS);
     make_inst(OVER, 0, wfiss);
 
-    make_loc(wfiss,
-             "You are on the west side of the fissure in the Hall of Mists.", 0,
-             0);
+    make_loc(wfiss);
     make_inst(JUMP, not(CRYSTAL, 0), bridge_rmk);
     make_inst(FORWARD, not(CRYSTAL, 1), lose);
     make_inst(OVER, not(CRYSTAL, 1), sayit);
@@ -1258,11 +1157,7 @@ int main() {
     make_inst(N, 0, thru);
     make_inst(W, 0, wmist);
 
-    make_loc(wmist,
-             "You are at the west end of the Hall of Mists.  A low wide crawl\n\
-continues west and another goes north.  To the south is a little\n\
-passage 6 feet off the floor.",
-             "You're at west end of Hall of Mists.", 0);
+    make_loc(wmist);
     make_inst(S, 0, like1);
     ditto(U);
     ditto(PASSAGE);
@@ -1272,25 +1167,25 @@ passage 6 feet off the floor.",
     make_inst(W, 0, elong);
     ditto(CRAWL);
 
-    make_loc(like1, all_alike, 0, twist_hint);
+    make_loc(like1);
     make_inst(U, 0, wmist);
     make_inst(N, 0, like1);
     make_inst(E, 0, like2);
     make_inst(S, 0, like4);
     make_inst(W, 0, like11);
 
-    make_loc(like2, all_alike, 0, twist_hint);
+    make_loc(like2);
     make_inst(W, 0, like1);
     make_inst(S, 0, like3);
     make_inst(E, 0, like4);
 
-    make_loc(like3, all_alike, 0, twist_hint);
+    make_loc(like3);
     make_inst(E, 0, like2);
     make_inst(D, 0, dead5);
     make_inst(S, 0, like6);
     make_inst(N, 0, dead9);
 
-    make_loc(like4, all_alike, 0, twist_hint);
+    make_loc(like4);
     make_inst(W, 0, like1);
     make_inst(N, 0, like2);
     make_inst(E, 0, dead3);
@@ -1298,23 +1193,23 @@ passage 6 feet off the floor.",
     make_inst(U, 0, like14);
     ditto(D);
 
-    make_loc(like5, all_alike, 0, twist_hint);
+    make_loc(like5);
     make_inst(E, 0, like6);
     make_inst(W, 0, like7);
 
-    make_loc(like6, all_alike, 0, twist_hint);
+    make_loc(like6);
     make_inst(E, 0, like3);
     make_inst(W, 0, like5);
     make_inst(D, 0, like7);
     make_inst(S, 0, like8);
 
-    make_loc(like7, all_alike, 0, twist_hint);
+    make_loc(like7);
     make_inst(W, 0, like5);
     make_inst(U, 0, like6);
     make_inst(E, 0, like8);
     make_inst(S, 0, like9);
 
-    make_loc(like8, all_alike, 0, twist_hint);
+    make_loc(like8);
     make_inst(W, 0, like6);
     make_inst(E, 0, like7);
     make_inst(S, 0, like8);
@@ -1322,43 +1217,38 @@ passage 6 feet off the floor.",
     make_inst(N, 0, like10);
     make_inst(D, 0, dead11);
 
-    make_loc(like9, all_alike, 0, twist_hint);
+    make_loc(like9);
     make_inst(W, 0, like7);
     make_inst(N, 0, like8);
     make_inst(S, 0, dead6);
 
-    make_loc(like10, all_alike, 0, twist_hint);
+    make_loc(like10);
     make_inst(W, 0, like8);
     make_inst(N, 0, like10);
     make_inst(D, 0, dead7);
     make_inst(E, 0, brink);
 
-    make_loc(like11, all_alike, 0, twist_hint);
+    make_loc(like11);
     make_inst(N, 0, like1);
     make_inst(W, 0, like11);
     ditto(S);
     make_inst(E, 0, dead1);
 
-    make_loc(like12, all_alike, 0, twist_hint);
+    make_loc(like12);
     make_inst(S, 0, brink);
     make_inst(E, 0, like13);
     make_inst(W, 0, dead10);
 
-    make_loc(like13, all_alike, 0, twist_hint);
+    make_loc(like13);
     make_inst(N, 0, brink);
     make_inst(W, 0, like12);
     make_inst(NW, 0, dead2);
 
-    make_loc(like14, all_alike, 0, twist_hint);
+    make_loc(like14);
     make_inst(U, 0, like4);
     ditto(D);
 
-    make_loc(
-        brink,
-        "You are on the brink of a thirty-foot pit with a massive orange column\n\
-down one wall.  You could climb down here but you could not get back\n\
-up.  The maze continues at this level.",
-        "You're at brink of pit.", 0);
+    make_loc( brink);
     make_inst(D, 0, bird);
     ditto(CLIMB);
     make_inst(W, 0, like10);
@@ -1366,12 +1256,7 @@ up.  The maze continues at this level.",
     make_inst(N, 0, like12);
     make_inst(E, 0, like13);
 
-    make_loc(
-        elong,
-        "You are at the east end of a very long hall apparently without side\n\
-chambers.  To the east a low wide crawl slants up.  To the north a\n\
-round two-foot hole slants down.",
-        "You're at east end of long hall.", 0);
+    make_loc( elong);
     make_inst(E, 0, wmist);
     ditto(U);
     ditto(CRAWL);
@@ -1380,77 +1265,34 @@ round two-foot hole slants down.",
     ditto(D);
     ditto(HOLE);
 
-    make_loc(
-        wlong,
-        "You are at the west end of a very long featureless hall.  The hall\n\
-joins up with a narrow north/south passage.",
-        "You're at west end of long hall.", 0);
+    make_loc( wlong);
     make_inst(E, 0, elong);
     make_inst(N, 0, cross);
     make_inst(S, 100, diff0);
 
-    twist(diff0, diff9, diff1, diff7, diff8, diff3, diff4, diff6, diff2, diff5,
-          wlong,
+    twist(diff0, diff9, diff1, diff7, diff8, diff3, diff4, diff6, diff2, diff5, wlong);
+    twist(diff1, diff8, diff9, diff10, diff0, diff5, diff2, diff3, diff4, diff6, diff7);
+    twist(diff2, diff3, diff4, diff8, diff5, diff7, diff10, diff0, diff6, diff1, diff9);
+    twist(diff3, diff7, diff10, diff6, diff2, diff4, diff9, diff8, diff5, diff0, diff1);
+    twist(diff4, diff1, diff7, diff5, diff9, diff0, diff3, diff2, diff10, diff8, diff6);
+    twist(diff5, diff0, diff3, diff4, diff6, diff8, diff1, diff9, diff7, diff10, diff2);
+    twist(diff6, diff10, diff5, diff0, diff1, diff9, diff8, diff7, diff3, diff2, diff4);
+    twist(diff7, diff6, diff2, diff9, diff10, diff1, diff0, diff5, diff8, diff4, diff3);
+    twist(diff8, diff5, diff6, diff1, diff4, diff2, diff7, diff10, diff9, diff3, diff0);
+    twist(diff9, diff4, diff8, diff2, diff3, diff10, diff6, diff1, diff0, diff7, diff5);
+    twist(diff10, diff2, pony, diff3, diff7, diff6, diff5, diff4, diff1, diff9, diff8);
 
-          "You are in a maze of twisty little passages, all different.");
-    twist(diff1, diff8, diff9, diff10, diff0, diff5, diff2, diff3, diff4, diff6,
-          diff7,
-
-          "You are in a maze of twisting little passages, all different.");
-    twist(diff2, diff3, diff4, diff8, diff5, diff7, diff10, diff0, diff6, diff1,
-          diff9,
-
-          "You are in a little maze of twisty passages, all different.");
-    twist(diff3, diff7, diff10, diff6, diff2, diff4, diff9, diff8, diff5, diff0,
-          diff1,
-
-          "You are in a twisting maze of little passages, all different.");
-    twist(diff4, diff1, diff7, diff5, diff9, diff0, diff3, diff2, diff10, diff8,
-          diff6,
-
-          "You are in a twisting little maze of passages, all different.");
-    twist(diff5, diff0, diff3, diff4, diff6, diff8, diff1, diff9, diff7, diff10,
-          diff2,
-
-          "You are in a twisty little maze of passages, all different.");
-    twist(diff6, diff10, diff5, diff0, diff1, diff9, diff8, diff7, diff3, diff2,
-          diff4,
-
-          "You are in a twisty maze of little passages, all different.");
-    twist(diff7, diff6, diff2, diff9, diff10, diff1, diff0, diff5, diff8, diff4,
-          diff3,
-
-          "You are in a little twisty maze of passages, all different.");
-    twist(diff8, diff5, diff6, diff1, diff4, diff2, diff7, diff10, diff9, diff3,
-          diff0,
-
-          "You are in a maze of little twisting passages, all different.");
-    twist(diff9, diff4, diff8, diff2, diff3, diff10, diff6, diff1, diff0, diff7,
-          diff5,
-
-          "You are in a maze of little twisty passages, all different.");
-    twist(diff10, diff2, pony, diff3, diff7, diff6, diff5, diff4, diff1, diff9,
-          diff8,
-
-          "You are in a little maze of twisting passages, all different.");
-
-    make_loc(pony, dead_end, 0, 0);
+    make_loc(pony);
     make_inst(N, 0, diff10);
     ditto(OUT);
 
-    make_loc(cross,
-             "You are at a crossover of a high N/S passage and a low E/W one.", 0,
-             0);
+    make_loc(cross);
     make_inst(W, 0, elong);
     make_inst(N, 0, dead0);
     make_inst(E, 0, west);
     make_inst(S, 0, wlong);
 
-    make_loc(
-        hmk,
-        "You are in the Hall of the Mountain King, with passages off in all\n\
-directions.",
-        "You're in Hall of Mt King.", snake_hint);
+    make_loc( hmk);
     make_inst(STAIRS, 0, emist);
     ditto(U);
     ditto(E);
@@ -1465,27 +1307,19 @@ directions.",
     make_inst(SW, sees(SNAKE), snaked);
     make_inst(SECRET, 0, secret);
 
-    make_loc(
-        west,
-        "You are in the west side chamber of the Hall of the Mountain King.\n\
-A passage continues west and up here.",
-        "You're in west side chamber.", 0);
+    make_loc(west);
     make_inst(HALL, 0, hmk);
     ditto(OUT);
     ditto(E);
     make_inst(W, 0, cross);
     ditto(U);
 
-    make_loc(south, "You are in the south side chamber.", 0, 0);
+    make_loc(south);
     make_inst(HALL, 0, hmk);
     ditto(OUT);
     ditto(N);
 
-    make_loc(
-        ns,
-        "You are in a low N/S passage at a hole in the floor.  The hole goes\n\
-down to an E/W passage.",
-        "You're in N/S passage.", 0);
+    make_loc(ns);
     make_inst(HALL, 0, hmk);
     ditto(OUT);
     ditto(S);
@@ -1494,12 +1328,7 @@ down to an E/W passage.",
     make_inst(D, 0, dirty);
     ditto(HOLE);
 
-    make_loc(
-        y2,
-        "You are in a large room, with a passage to the south, a passage to the\n\
-west, and a wall of broken rock to the east.  There is a large \"Y2\" on\n\
-a rock in the room's center.",
-        "You're at \"Y2\".", 0);
+    make_loc(y2);
     make_inst(PLUGH, 0, house);
     make_inst(S, 0, ns);
     make_inst(E, 0, jumble);
@@ -1509,31 +1338,17 @@ a rock in the room's center.",
     make_inst(PLOVER, holds(EMERALD), pdrop);
     make_inst(PLOVER, 0, proom);
 
-    make_loc(jumble, "You are in a jumble of rock, with cracks everywhere.", 0,
-             0);
+    make_loc(jumble);
     make_inst(D, 0, y2);
     ditto(Y2);
     make_inst(U, 0, emist);
 
-    make_loc(
-        windoe,
-        "You're at a low window overlooking a huge pit, which extends up out of\n\
-sight.  A floor is indistinctly visible over 50 feet below.  Traces of\n\
-white mist cover the floor of the pit, becoming thicker to the right.\n\
-Marks in the dust around the window would seem to indicate that\n\
-someone has been here recently.  Directly across the pit from you and\n\
-25 feet away there is a similar window looking into a lighted room.\n\
-A shadowy figure can be seen there peering back at you.",
-        "You're at window on pit.", 0);
+    make_loc(windoe);
     make_inst(E, 0, y2);
     ditto(Y2);
     make_inst(JUMP, 0, neck);
 
-    make_loc(
-        dirty,
-        "You are in a dirty broken passage.  To the east is a crawl.  To the\n\
-west is a large passage.  Above you is a hole to another passage.",
-        "You're in dirty passage.", 0);
+    make_loc(dirty);
     make_inst(E, 0, clean);
     ditto(CRAWL);
     make_inst(U, 0, ns);
@@ -1541,21 +1356,14 @@ west is a large passage.  Above you is a hole to another passage.",
     make_inst(W, 0, dusty);
     make_inst(BEDQUILT, 0, bedquilt);
 
-    make_loc(
-        clean,
-        "You are on the brink of a small clean climbable pit.  A crawl leads\n\
-west.",
-        "You're by a clean pit.", 0);
+    make_loc( clean);
     make_inst(W, 0, dirty);
     ditto(CRAWL);
     make_inst(D, 0, wet);
     ditto(PIT);
     ditto(CLIMB);
 
-    make_loc(wet,
-             "You are in the bottom of a small pit with a little stream, which\n\
-enters and exits through tiny slits.",
-             "You're in pit by stream.", liquid);
+    make_loc(wet);
     make_inst(CLIMB, 0, clean);
     ditto(U);
     ditto(OUT);
@@ -1565,11 +1373,7 @@ enters and exits through tiny slits.",
     ditto(UPSTREAM);
     ditto(DOWNSTREAM);
 
-    make_loc(
-        dusty,
-        "You are in a large room full of dusty rocks.  There is a big hole in\n\
-the floor.  There are cracks everywhere, and a passage leading east.",
-        "You're in dusty rock room.", 0);
+    make_loc(dusty);
     make_inst(E, 0, dirty);
     ditto(PASSAGE);
     make_inst(D, 0, complex);
@@ -1577,12 +1381,7 @@ the floor.  There are cracks everywhere, and a passage leading east.",
     ditto(FLOOR);
     make_inst(BEDQUILT, 0, bedquilt);
 
-    make_loc(
-        complex,
-        "You are at a complex junction.  A low hands-and-knees passage from the\n\
-north joins a higher crawl from the east to make a walking passage\n\
-going west.  There is also a large room above.  The air is damp here.",
-        "You're at complex junction.", 0);
+    make_loc(complex);
     make_inst(U, 0, dusty);
     ditto(CLIMB);
     ditto(ROOM);
@@ -1592,12 +1391,7 @@ going west.  There is also a large room above.  The air is damp here.",
     ditto(SHELL);
     make_inst(E, 0, ante);
 
-    make_loc(shell,
-             "You're in a large room carved out of sedimentary rock.  The floor\n\
-and walls are littered with bits of shells embedded in the stone.\n\
-A shallow passage proceeds downward, and a somewhat steeper one\n\
-leads up.  A low hands-and-knees passage enters from the south.",
-             "You're in Shell Room.", 0);
+    make_loc(shell);
     make_inst(U, 0, arch);
     ditto(HALL);
     make_inst(D, 0, ragged);
@@ -1605,40 +1399,27 @@ leads up.  A low hands-and-knees passage enters from the south.",
     make_inst(S, holds(OYSTER), sayit);
     make_inst(S, 0, complex);
 
-    make_loc(
-        arch,
-        "You are in an arched hall.  A coral passage once continued up and east\n\
-from here, but is now blocked by debris.  The air smells of sea water.",
-        "You're in arched hall.", 0);
+    make_loc(arch);
     make_inst(D, 0, shell);
     ditto(SHELL);
     ditto(OUT);
 
-    make_loc(ragged,
-             "You are in a long sloping corridor with ragged sharp walls.", 0, 0);
+    make_loc(ragged);
     make_inst(U, 0, shell);
     ditto(SHELL);
     make_inst(D, 0, sac);
 
-    make_loc(sac, "You are in a cul-de-sac about eight feet across.", 0, 0);
+    make_loc(sac);
     make_inst(U, 0, ragged);
     ditto(OUT);
     make_inst(SHELL, 0, shell);
 
-    make_loc(
-        ante,
-        "You are in an anteroom leading to a large passage to the east.  Small\n\
-passages go west and up.  The remnants of recent digging are evident.\n\
-A sign in midair here says \"CAVE UNDER CONSTRUCTION BEYOND THIS POINT.\n\
-PROCEED AT OWN RISK.  [WITT CONSTRUCTION COMPANY]\"",
-        "You're in anteroom.", 0);
+    make_loc(ante);
     make_inst(U, 0, complex);
     make_inst(W, 0, bedquilt);
     make_inst(E, 0, witt);
 
-    make_loc(witt,
-             "You are at Witt's End.  Passages lead off in \"all\" directions.",
-             "You're at Witt's End.", witt_hint);
+    make_loc(witt);
     loop_rmk = sayit;
     make_inst(E, 95, sayit);
     ditto(N);
@@ -1652,11 +1433,7 @@ PROCEED AT OWN RISK.  [WITT CONSTRUCTION COMPANY]\"",
     make_inst(E, 0, ante);
     make_inst(W, 0, sayit);
 
-    make_loc(
-        bedquilt,
-        "You are in Bedquilt, a long east/west passage with holes everywhere.\n\
-To explore at random select north, south, up, or down.",
-        "You're in Bedquilt.", 0);
+    make_loc(bedquilt);
     make_inst(E, 0, complex);
     make_inst(W, 0, cheese);
     make_inst(S, 80, loop_rmk);
@@ -1670,12 +1447,7 @@ To explore at random select north, south, up, or down.",
     make_inst(D, 80, loop_rmk);
     make_inst(D, 0, ante);
 
-    make_loc(
-        cheese,
-        "You are in a room whose walls resemble Swiss cheese.  Obvious passages\n\
-go west, east, NE, and NW.  Part of the room is occupied by a large\n\
-bedrock block.",
-        "You're in Swiss cheese room.", 0);
+    make_loc(cheese);
     make_inst(NE, 0, bedquilt);
     make_inst(W, 0, e2pit);
     make_inst(S, 80, loop_rmk);
@@ -1684,32 +1456,18 @@ bedrock block.",
     make_inst(NW, 50, loop_rmk);
     make_inst(ORIENTAL, 0, oriental);
 
-    make_loc(
-        soft,
-        "You are in the Soft Room.  The walls are covered with heavy curtains,\n\
-the floor with a thick pile carpet.  Moss covers the ceiling.",
-        "You're in Soft Room.", 0);
+    make_loc( soft);
     make_inst(W, 0, cheese);
     ditto(OUT);
 
-    make_loc(e2pit,
-             "You are at the east end of the Twopit Room.  The floor here is\n\
-littered with thin rock slabs, which make it easy to descend the pits.\n\
-There is a path here bypassing the pits to connect passages from east\n\
-and west.  There are holes all over, but the only big one is on the\n\
-wall directly over the west pit where you can't get to it.",
-             "You're at east end of Twopit Room.", 0);
+    make_loc(e2pit);
     make_inst(E, 0, cheese);
     make_inst(W, 0, w2pit);
     ditto(ACROSS);
     make_inst(D, 0, epit);
     ditto(PIT);
 
-    make_loc(
-        w2pit,
-        "You are at the west end of the Twopit Room.  There is a large hole in\n\
-the wall above the pit at this end of the room.",
-        "You're at west end of Twopit Room.", 0);
+    make_loc(w2pit);
     make_inst(E, 0, e2pit);
     ditto(ACROSS);
     make_inst(W, 0, slab);
@@ -1718,29 +1476,17 @@ the wall above the pit at this end of the room.",
     ditto(PIT);
     make_inst(HOLE, 0, sayit);
 
-    make_loc(
-        epit,
-        "You are at the bottom of the eastern pit in the Twopit Room.  There is\n\
-a small pool of oil in one corner of the pit.",
-        "You're in east pit.", liquid + oil);
+    make_loc(epit);
     make_inst(U, 0, e2pit);
     ditto(OUT);
 
-    make_loc(
-        wpit,
-        "You are at the bottom of the western pit in the Twopit Room.  There is\n\
-a large hole in the wall about 25 feet above you.",
-        "You're in west pit.", 0);
+    make_loc(wpit);
     make_inst(U, 0, w2pit);
     ditto(OUT);
     make_inst(CLIMB, not(PLANT, 4), check);
     make_inst(CLIMB, 0, climb);
 
-    make_loc(narrow,
-             "You are in a long, narrow corridor stretching out of sight to the\n\
-west.  At the eastern end is a hole through which you can see a\n\
-profusion of leaves.",
-             "You're in narrow corridor.", 0);
+    make_loc(narrow);
     make_inst(D, 0, wpit);
     ditto(CLIMB);
     ditto(E);
@@ -1748,23 +1494,17 @@ profusion of leaves.",
     make_inst(W, 0, giant);
     ditto(GIANT);
 
-    make_loc(
-        giant,
-        "You are in the Giant Room.  The ceiling here is too high up for your\n\
-lamp to show it.  Cavernous passages lead east, north, and south.  On\n\
-the west wall is scrawled the inscription, \"FEE FIE FOE FOO\" [sic].",
-        "You're in Giant Room.", 0);
+    make_loc(giant);
     make_inst(S, 0, narrow);
     make_inst(E, 0, block);
     make_inst(N, 0, immense);
 
-    make_loc(block, "The passage here is blocked by a recent cave-in.", 0, 0);
+    make_loc(block);
     make_inst(S, 0, giant);
     ditto(GIANT);
     ditto(OUT);
 
-    make_loc(immense, "You are at one end of an immense north/south passage.", 0,
-             0);
+    make_loc(immense);
     make_inst(S, 0, giant);
     ditto(GIANT);
     ditto(PASSAGE);
@@ -1773,52 +1513,31 @@ the west wall is scrawled the inscription, \"FEE FIE FOE FOO\" [sic].",
     ditto(CAVERN);
     make_inst(N, 0, sayit);
 
-    make_loc(
-        falls,
-        "You are in a magnificent cavern with a rushing stream, which cascades\n\
-over a sparkling waterfall into a roaring whirlpool that disappears\n\
-through a hole in the floor.  Passages exit to the south and west.",
-        "You're in cavern with waterfall.", liquid);
+    make_loc(falls);
     make_inst(S, 0, immense);
     ditto(OUT);
     make_inst(GIANT, 0, giant);
     make_inst(W, 0, steep);
 
-    make_loc(
-        steep,
-        "You are at the top of a steep incline above a large room.  You could\n\
-climb down here, but you would not be able to climb up.  There is a\n\
-passage leading back to the north.",
-        "You're at steep incline above large room.", 0);
+    make_loc( steep);
     make_inst(N, 0, falls);
     ditto(CAVERN);
     ditto(PASSAGE);
     make_inst(D, 0, low);
     ditto(CLIMB);
 
-    make_loc(abovep, "You are in a secret N/S canyon above a sizable passage.", 0,
-             0);
+    make_loc(abovep);
     make_inst(N, 0, sjunc);
     make_inst(D, 0, bedquilt);
     ditto(PASSAGE);
     make_inst(S, 0, tite);
 
-    make_loc(
-        sjunc,
-        "You are in a secret canyon at a junction of three canyons, bearing\n\
-north, south, and SE.  The north one is as tall as the other two\n\
-combined.",
-        "You're at junction of three secret canyons.", 0);
+    make_loc( sjunc);
     make_inst(SE, 0, bedquilt);
     make_inst(S, 0, abovep);
     make_inst(N, 0, window);
 
-    make_loc(
-        tite,
-        "A large stalactite extends from the roof and almost reaches the floor\n\
-below.  You could climb down it, and jump from it to the floor, but\n\
-having done so you would be unable to reach it to climb back up.",
-        "You're on top of stalactite.", 0);
+    make_loc( tite);
     make_inst(N, 0, abovep);
     make_inst(D, 40, like6);
     ditto(JUMP);
@@ -1826,38 +1545,23 @@ having done so you would be unable to reach it to climb back up.",
     make_inst(D, 50, like9);
     make_inst(D, 0, like4);
 
-    make_loc(low, "You are in a large low room.  Crawls lead north, SE, and SW.",
-             0, 0);
+    make_loc(low);
     make_inst(BEDQUILT, 0, bedquilt);
     make_inst(SW, 0, scorr);
     make_inst(N, 0, crawl);
     make_inst(SE, 0, oriental);
     ditto(ORIENTAL);
 
-    make_loc(crawl, "Dead end crawl.", 0, 0);
+    make_loc(crawl);
     make_inst(S, 0, low);
     ditto(CRAWL);
     ditto(OUT);
 
-    make_loc(
-        window,
-        "You're at a low window overlooking a huge pit, which extends up out of\n\
-sight.  A floor is indistinctly visible over 50 feet below.  Traces of\n\
-white mist cover the floor of the pit, becoming thicker to the left.\n\
-Marks in the dust around the window would seem to indicate that\n\
-someone has been here recently.  Directly across the pit from you and\n\
-25 feet away there is a similar window looking into a lighted room.\n\
-A shadowy figure can be seen there peering back at you.",
-        short_desc[windoe], 0);
+    make_loc( window);
     make_inst(W, 0, sjunc);
     make_inst(JUMP, 0, neck);
 
-    make_loc(
-        oriental,
-        "This is the Oriental Room.  Ancient oriental cave drawings cover the\n\
-walls.  A gently sloping passage leads upward to the north, another\n\
-passage leads SE, and a hands-and-knees crawl leads west.",
-        "You're in Oriental Room.", 0);
+    make_loc( oriental);
     make_inst(SE, 0, cheese);
     make_inst(W, 0, low);
     ditto(CRAWL);
@@ -1865,34 +1569,19 @@ passage leads SE, and a hands-and-knees crawl leads west.",
     ditto(N);
     ditto(CAVERN);
 
-    make_loc(
-        misty,
-        "You are following a wide path around the outer edge of a large cavern.\n\
-Far below, through a heavy white mist, strange splashing noises can be\n\
-heard.  The mist rises up through a fissure in the ceiling.  The path\n\
-exits to the south and west.",
-        "You're in misty cavern.", 0);
+    make_loc( misty);
     make_inst(S, 0, oriental);
     ditto(ORIENTAL);
     make_inst(W, 0, alcove);
 
-    make_loc(
-        alcove,
-        "You are in an alcove.  A small NW path seems to widen after a short\n\
-distance.  An extremely tight tunnel leads east.  It looks like a very\n\
-tight squeeze.  An eerie light can be seen at the other end.",
-        "You're in alcove.", dark_hint);
+    make_loc( alcove);
     make_inst(NW, 0, misty);
     ditto(CAVERN);
     make_inst(E, 0, ppass);
     ditto(PASSAGE);
     make_inst(E, 0, proom);
 
-    make_loc(
-        proom,
-        "You're in a small chamber lit by an eerie green light.  An extremely\n\
-narrow tunnel exits to the west.  A dark corridor leads NE.",
-        "You're in Plover Room.", lighted + dark_hint);
+    make_loc( proom);
     make_inst(W, 0, ppass);
     ditto(PASSAGE);
     ditto(OUT);
@@ -1902,28 +1591,18 @@ narrow tunnel exits to the west.  A dark corridor leads NE.",
     make_inst(NE, 0, droom);
     ditto(DARK);
 
-    make_loc(
-        droom,
-        "You're in the Dark-Room.  A corridor leading south is the only exit.",
-        "You're in Dark-Room.", dark_hint);
+    make_loc( droom);
     make_inst(S, 0, proom);
     ditto(PLOVER);
     ditto(OUT);
 
-    make_loc(
-        slab,
-        "You are in a large low circular chamber whose floor is an immense slab\n\
-fallen from the ceiling (Slab Room).  There once were large passages\n\
-to the east and west, but they are now filled with boulders.  Low\n\
-small passages go north and south, and the south one quickly bends\n\
-east around the boulders.",
-        "You're in Slab Room.", 0);
+    make_loc( slab);
     make_inst(S, 0, w2pit);
     make_inst(U, 0, abover);
     ditto(CLIMB);
     make_inst(N, 0, bedquilt);
 
-    make_loc(abover, "You are in a secret N/S canyon above a large room.", 0, 0);
+    make_loc(abover);
     make_inst(D, 0, slab);
     ditto(SLAB);
     make_inst(S, not(DRAGON, 0), scan2);
@@ -1931,95 +1610,58 @@ east around the boulders.",
     make_inst(N, 0, mirror);
     make_inst(RESERVOIR, 0, res);
 
-    make_loc(
-        mirror,
-        "You are in a north/south canyon about 25 feet across.  The floor is\n\
-covered by white mist seeping in from the north.  The walls extend\n\
-upward for well over 100 feet.  Suspended from some unseen point far\n\
-above you, an enormous two-sided mirror is hanging parallel to and\n\
-midway between the canyon walls.  (The mirror is obviously provided\n\
-for the use of the dwarves, who as you know are extremely vain.)\n\
-A small window can be seen in either wall, some fifty feet up.",
-        "You're in mirror canyon.", 0);
+    make_loc( mirror);
     make_inst(S, 0, abover);
     make_inst(N, 0, res);
     ditto(RESERVOIR);
 
-    make_loc(
-        res,
-        "You are at the edge of a large underground reservoir.  An opaque cloud\n\
-of white mist fills the room and rises rapidly upward.  The lake is\n\
-fed by a stream, which tumbles out of a hole in the wall about 10 feet\n\
-overhead and splashes noisily into the water somewhere within the\n\
-mist.  The only passage goes back toward the south.",
-        "You're at reservoir.", liquid);
+    make_loc( res);
     make_inst(S, 0, mirror);
     ditto(OUT);
 
-    make_loc(scan1,
-             "You are in a secret canyon that exits to the north and east.", 0,
-             0);
+    make_loc(scan1);
     make_inst(N, 0, abover);
     ditto(OUT);
     make_inst(E, 0, sayit);
     ditto(FORWARD);
 
-    make_loc(scan2, long_desc[scan1], 0, 0);
+    make_loc(scan2);
     make_inst(N, 0, abover);
     make_inst(E, 0, secret);
 
-    make_loc(scan3, long_desc[scan1], 0, 0);
+    make_loc(scan3);
     make_inst(E, 0, secret);
     ditto(OUT);
     make_inst(N, 0, sayit);
     ditto(FORWARD);
 
-    make_loc(
-        secret,
-        "You are in a secret canyon, which here runs E/W.  It crosses over a\n\
-very tight canyon 15 feet below.  If you go down you may not be able\n\
-to get back up.",
-        "You're in secret E/W canyon above tight canyon.", 0);
+    make_loc( secret);
     make_inst(E, 0, hmk);
     make_inst(W, not(DRAGON, 0), scan2);
     make_inst(W, 0, scan3);
     make_inst(D, 0, wide);
 
-    make_loc(wide, "You are at a wide place in a very tight N/S canyon.", 0, 0);
+    make_loc(wide);
     make_inst(S, 0, tight);
     make_inst(N, 0, tall);
 
-    make_loc(tight, "The canyon here becomes too tight to go further south.", 0,
-             0);
+    make_loc(tight);
     make_inst(N, 0, wide);
 
-    make_loc(
-        tall,
-        "You are in a tall E/W canyon.  A low tight crawl goes 3 feet north and\n\
-seems to open up.",
-        "You're in tall E/W canyon.", 0);
+    make_loc( tall);
     make_inst(E, 0, wide);
     make_inst(W, 0, boulders);
     make_inst(N, 0, cheese);
     ditto(CRAWL);
 
-    make_loc(boulders, "The canyon runs into a mass of boulders --- dead end.", 0,
-             0);
+    make_loc(boulders);
     make_inst(S, 0, tall);
 
-    make_loc(scorr,
-             "You are in a long winding corridor sloping out of sight in both\n\
-directions.",
-             "You're in sloping corridor.", 0);
+    make_loc(scorr);
     make_inst(D, 0, low);
     make_inst(U, 0, swside);
 
-    make_loc(
-        swside,
-        "You are on one side of a large, deep chasm.  A heavy white mist rising\n\
-up from below obscures all view of the far side.  A SW path leads away\n\
-from the chasm into a winding corridor.",
-        "You're on SW side of chasm.", 0);
+    make_loc( swside);
     make_inst(SW, 0, scorr);
     make_inst(OVER, sees(TROLL), sayit);
     ditto(ACROSS);
@@ -2030,58 +1672,54 @@ from the chasm into a winding corridor.",
     make_inst(JUMP, not(BRIDGE, 0), lose);
     make_inst(JUMP, 0, bridge_rmk);
 
-    make_loc(dead0, dead_end, 0, 0);
+    make_loc(dead0);
     make_inst(S, 0, cross);
     ditto(OUT);
 
-    make_loc(dead1, dead_end, 0, twist_hint);
+    make_loc(dead1);
     make_inst(W, 0, like11);
     ditto(OUT);
 
-    make_loc(dead2, dead_end, 0, 0);
+    make_loc(dead2);
     make_inst(SE, 0, like13);
 
-    make_loc(dead3, dead_end, 0, twist_hint);
+    make_loc(dead3);
     make_inst(W, 0, like4);
     ditto(OUT);
 
-    make_loc(dead4, dead_end, 0, twist_hint);
+    make_loc(dead4);
     make_inst(E, 0, like4);
     ditto(OUT);
 
-    make_loc(dead5, dead_end, 0, twist_hint);
+    make_loc(dead5);
     make_inst(U, 0, like3);
     ditto(OUT);
 
-    make_loc(dead6, dead_end, 0, twist_hint);
+    make_loc(dead6);
     make_inst(W, 0, like9);
     ditto(OUT);
 
-    make_loc(dead7, dead_end, 0, twist_hint);
+    make_loc(dead7);
     make_inst(U, 0, like10);
     ditto(OUT);
 
-    make_loc(dead8, dead_end, 0, 0);
+    make_loc(dead8);
     make_inst(E, 0, brink);
     ditto(OUT);
 
-    make_loc(dead9, dead_end, 0, twist_hint);
+    make_loc(dead9);
     make_inst(S, 0, like3);
     ditto(OUT);
 
-    make_loc(dead10, dead_end, 0, twist_hint);
+    make_loc(dead10);
     make_inst(E, 0, like12);
     ditto(OUT);
 
-    make_loc(dead11, dead_end, 0, twist_hint);
+    make_loc(dead11);
     make_inst(U, 0, like8);
     ditto(OUT);
 
-    make_loc(
-        neside,
-        "You are on the far side of the chasm.  A NE path leads away from the\n\
-chasm on this side.",
-        "You're on NE side of chasm.", 0);
+    make_loc( neside);
     make_inst(NE, 0, corr);
     make_inst(OVER, sees(TROLL), sayit - 1);
     ditto(ACROSS);
@@ -2093,23 +1731,14 @@ chasm on this side.",
     make_inst(VIEW, 0, view);
     make_inst(BARREN, 0, fbarr);
 
-    make_loc(
-        corr,
-        "You're in a long east/west corridor.  A faint rumbling noise can be\n\
-heard in the distance.",
-        "You're in corridor.", 0);
+    make_loc( corr);
     make_inst(W, 0, neside);
     make_inst(E, 0, fork);
     ditto(FORK);
     make_inst(VIEW, 0, view);
     make_inst(BARREN, 0, fbarr);
 
-    make_loc(
-        fork,
-        "The path forks here.  The left fork leads northeast.  A dull rumbling\n\
-seems to get louder in that direction.  The right fork leads southeast\n\
-down a gentle slope.  The main corridor enters from the west.",
-        "You're at fork in path.", 0);
+    make_loc( fork);
     make_inst(W, 0, corr);
     make_inst(NE, 0, warm);
     ditto(L);
@@ -2119,12 +1748,7 @@ down a gentle slope.  The main corridor enters from the west.",
     make_inst(VIEW, 0, view);
     make_inst(BARREN, 0, fbarr);
 
-    make_loc(
-        warm,
-        "The walls are quite warm here.  From the north can be heard a steady\n\
-roar, so loud that the entire cave seems to be trembling.  Another\n\
-passage leads south, and a low crawl goes east.",
-        "You're at junction with warm walls.", 0);
+    make_loc( warm);
     make_inst(S, 0, fork);
     ditto(FORK);
     make_inst(N, 0, view);
@@ -2132,27 +1756,7 @@ passage leads south, and a low crawl goes east.",
     make_inst(E, 0, chamber);
     ditto(CRAWL);
 
-    make_loc(view,
-             "You are on the edge of a breath-taking view.  Far below you is an\n\
-active volcano, from which great gouts of molten lava come surging\n\
-out, cascading back down into the depths.  The glowing rock fills the\n\
-farthest reaches of the cavern with a blood-red glare, giving every-\n\
-thing an eerie, macabre appearance.  The air is filled with flickering\n\
-sparks of ash and a heavy smell of brimstone.  The walls are hot to\n\
-the touch, and the thundering of the volcano drowns out all other\n\
-sounds.  Embedded in the jagged roof far overhead are myriad twisted\n\
-formations, composed of pure white alabaster, which scatter the murky\n\
-light into sinister apparitions upon the walls.  To one side is a deep\n\
-gorge, filled with a bizarre chaos of tortured rock that seems to have\n\
-been crafted by the Devil himself.  An immense river of fire crashes\n\
-out from the depths of the volcano, burns its way through the gorge,\n\
-and plummets into a bottomless pit far off to your left.  To the\n\
-right, an immense geyser of blistering steam erupts continuously\n\
-from a barren island in the center of a sulfurous lake, which bubbles\n\
-ominously.  The far right wall is aflame with an incandescence of its\n\
-own, which lends an additional infernal splendor to the already\n\
-hellish scene.  A dark, foreboding passage exits to the south.",
-             "You're at breath-taking view.", lighted);
+    make_loc(view);
     make_inst(S, 0, warm);
     ditto(PASSAGE);
     ditto(OUT);
@@ -2160,24 +1764,14 @@ hellish scene.  A dark, foreboding passage exits to the south.",
     make_inst(D, 0, sayit);
     ditto(JUMP);
 
-    make_loc(
-        chamber,
-        "You are in a small chamber filled with large boulders.  The walls are\n\
-very warm, causing the air in the room to be almost stifling from the\n\
-heat.  The only exit is a crawl heading west, through which a low\n\
-rumbling noise is coming.",
-        "You're in chamber of boulders.", 0);
+    make_loc( chamber);
     make_inst(W, 0, warm);
     ditto(OUT);
     ditto(CRAWL);
     make_inst(FORK, 0, fork);
     make_inst(VIEW, 0, view);
 
-    make_loc(
-        lime,
-        "You are walking along a gently sloping north/south passage lined with\n\
-oddly shaped limestone formations.",
-        "You're in limestone passage.", 0);
+    make_loc( lime);
     make_inst(N, 0, fork);
     ditto(U);
     ditto(FORK);
@@ -2186,10 +1780,7 @@ oddly shaped limestone formations.",
     ditto(BARREN);
     make_inst(VIEW, 0, view);
 
-    make_loc(fbarr,
-             "You are standing at the entrance to a large, barren room.  A sign\n\
-posted above the entrance reads:  \"CAUTION!  BEAR IN ROOM!\"",
-             "You're in front of barren room.", 0);
+    make_loc(fbarr);
     make_inst(W, 0, lime);
     ditto(U);
     make_inst(FORK, 0, fork);
@@ -2199,95 +1790,54 @@ posted above the entrance reads:  \"CAUTION!  BEAR IN ROOM!\"",
     ditto(ENTER);
     make_inst(VIEW, 0, view);
 
-    make_loc(
-        barr,
-        "You are inside a barren room.  The center of the room is completely\n\
-empty except for some dust.  Marks in the dust lead away toward the\n\
-far end of the room.  The only exit is the way you came in.",
-        "You're in barren room.", 0);
+    make_loc( barr);
     make_inst(W, 0, fbarr);
     ditto(OUT);
     make_inst(FORK, 0, fork);
     make_inst(VIEW, 0, view);
 
-    make_loc(
-        neend,
-        "You are at the northeast end of an immense room, even larger than the\n\
-Giant Room.  It appears to be a repository for the \"Adventure\"\n\
-program.  Massive torches far overhead bathe the room with smoky\n\
-yellow light.  Scattered about you can be seen a pile of bottles (all\n\
-of them empty), a nursery of young beanstalks murmuring quietly, a bed\n\
-of oysters, a bundle of black rods with rusty stars on their ends, and\n\
-a collection of brass lanterns.  Off to one side a great many dwarves\n\
-are sleeping on the floor, snoring loudly.  A sign nearby reads:  \"DO\n\
-NOT DISTURB THE DWARVES!\"  An immense mirror is hanging against one\n\
-wall, and stretches to the other end of the room, where various other\n\
-sundry objects can be glimpsed dimly in the distance.",
-        "You're at NE end.", lighted);
+    make_loc(neend);
     make_inst(SW, 0, swend);
 
-    make_loc(
-        swend,
-        "You are at the southwest end of the repository.  To one side is a pit\n\
-full of fierce green snakes.  On the other side is a row of small\n\
-wicker cages, each of which contains a little sulking bird.  In one\n\
-corner is a bundle of black rods with rusty marks on their ends.\n\
-A large number of velvet pillows are scattered about on the floor.\n\
-A vast mirror stretches off to the northeast.  At your feet is a\n\
-large steel grate, next to which is a sign that reads, \"TREASURE\n\
-VAULT.  KEYS IN MAIN OFFICE.\"",
-        "You're at SW end.", lighted);
+    make_loc( swend);
     make_inst(NE, 0, neend);
     make_inst(D, 0, grate_rmk);
 
-    make_loc(crack, "The crack is far too small for you to follow.", 0, 0);
+    make_loc(crack);
     make_inst(FORCE, 0, spit);
 
-    make_loc(neck, "You are at the bottom of the pit with a broken neck.", 0, 0);
+    make_loc(neck);
     make_inst(FORCE, 0, limbo);
 
-    make_loc(lose, "You didn't make it.", 0, 0);
+    make_loc(lose);
     make_inst(FORCE, 0, limbo);
 
-    make_loc(cant, "The dome is unclimbable.", 0, 0);
+    make_loc(cant);
     make_inst(FORCE, 0, emist);
 
-    make_loc(climb,
-             "You clamber up the plant and scurry through the hole at the top.",
-             0, 0);
+    make_loc(climb);
     make_inst(FORCE, 0, narrow);
 
-    make_loc(check, 0, 0, 0);
+    make_loc(check);
     make_inst(FORCE, not(PLANT, 2), upnout);
     make_inst(FORCE, 0, didit);
 
-    make_loc(snaked, "You can't get by the snake.", 0, 0);
+    make_loc(snaked);
     make_inst(FORCE, 0, hmk);
 
-    make_loc(
-        thru,
-        "You have crawled through a very low wide passage parallel to and north\n\
-of the Hall of Mists.",
-        0, 0);
+    make_loc(thru);
     make_inst(FORCE, 0, wmist);
 
-    make_loc(duck, long_desc[thru], 0, 0);
+    make_loc(duck);
     make_inst(FORCE, 0, wfiss);
 
-    make_loc(
-        sewer,
-        "The stream flows out through a pair of 1-foot-diameter sewer pipes.\n\
-It would be advisable to use the exit.",
-        0, 0);
+    make_loc( sewer);
     make_inst(FORCE, 0, house);
 
-    make_loc(upnout,
-             "There is nothing here to climb.  Use \"up\" or \"out\" to leave "
-             "the pit.",
-             0, 0);
+    make_loc(upnout);
     make_inst(FORCE, 0, wpit);
 
-    make_loc(didit, "You have climbed up the plant and out of the pit.", 0, 0);
+    make_loc(didit);
     make_inst(FORCE, 0, w2pit);
 
     start[ppass] = q;
@@ -2517,10 +2067,10 @@ commence:
             if (was_dark && pct(35))
                 goto pitch_dark;
             p = pitch_dark_msg;
-        } else if (short_desc[loc] == 0 || visits[loc] % interval == 0)
-            p = long_desc[loc];
+        } else if (get_description_short(loc) == nullptr || visits[loc] % interval == 0)
+            p = get_description_long(loc);
         else
-            p = short_desc[loc];
+            p = get_description_short(loc);
         if (toting(BEAR))
             printf("You are being followed by a very large, tame bear.\n");
         if (p)
