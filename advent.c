@@ -7,7 +7,7 @@
 #include "location.h"
 
 constexpr int HASH_PRIME = 1009;
-#define travel_size 740
+#define travel_size 739
 #define make_loc(x)                                                            \
   {                                                                            \
     start[x] = q;                                                              \
@@ -258,8 +258,6 @@ char const *const remarks[REM_SIZE] = {
 };
 int visits[max_loc + 1]; // how often have you been here?
 
-int slit_rmk, grate_rmk, bridge_rmk, loop_rmk;
-
 object first[max_loc + 1];  // first object present at a location
 object link[max_obj + 1];   // next object present in the same location
 object base[max_obj + 2];   // the smallestobject in each object's group, if any
@@ -315,8 +313,8 @@ location dloc[nd + 1] = { // dwarf location
     [0] = chest_loc, [1] = hmk,   [2] = wfiss,
     [3] = y2,        [4] = like3, [5] = complex
 };
-location odloc[nd + 1];
-bool dseen[nd + 1];
+location odloc[nd + 1];   // old dwarf location
+bool dseen[nd + 1];       // dwarf seen
 
 int dtotal;
 int attack;
@@ -1021,7 +1019,6 @@ int main() {
     make_inst(SLIT, 0, sayit);
     ditto(STREAM);
     ditto(D);
-    slit_rmk = sayit;
 
     make_loc( outside);
     make_inst(WOODS, 0, forest);
@@ -1033,17 +1030,16 @@ int main() {
     ditto(GULLY);
     ditto(N);
     make_inst(ENTER, not(GRATE, 0), inside);
-    ditto(ENTER);
+    //ditto(ENTER); // Duplicate - typo?
     ditto(IN);
     ditto(D);
-    grate_rmk = sayit;
     make_inst(ENTER, 0, sayit);
 
     make_loc( inside);
     make_inst(OUT, not(GRATE, 0), outside);
     ditto(OUT);
     ditto(U);
-    make_inst(OUT, 0, grate_rmk);
+    make_inst(OUT, 0, sayit);
     make_inst(CRAWL, 0, cobbles);
     ditto(COBBLES);
     ditto(IN);
@@ -1137,7 +1133,6 @@ int main() {
     make_loc( efiss);
     make_inst(HALL, 0, emist);
     ditto(E);
-    bridge_rmk = sayit;
     make_inst(JUMP, not(CRYSTAL, 0), sayit);
     make_inst(FORWARD, not(CRYSTAL, 1), lose);
     make_inst(OVER, not(CRYSTAL, 1), sayit);
@@ -1147,7 +1142,7 @@ int main() {
     make_inst(OVER, 0, wfiss);
 
     make_loc(wfiss);
-    make_inst(JUMP, not(CRYSTAL, 0), bridge_rmk);
+    make_inst(JUMP, not(CRYSTAL, 0), sayit);
     make_inst(FORWARD, not(CRYSTAL, 1), lose);
     make_inst(OVER, not(CRYSTAL, 1), sayit);
     ditto(ACROSS);
@@ -1367,7 +1362,7 @@ int main() {
     make_inst(CLIMB, 0, clean);
     ditto(U);
     ditto(OUT);
-    make_inst(SLIT, 0, slit_rmk);
+    make_inst(SLIT, 0, sayit);
     ditto(STREAM);
     ditto(D);
     ditto(UPSTREAM);
@@ -1420,7 +1415,6 @@ int main() {
     make_inst(E, 0, witt);
 
     make_loc(witt);
-    loop_rmk = sayit;
     make_inst(E, 95, sayit);
     ditto(N);
     ditto(S);
@@ -1436,24 +1430,24 @@ int main() {
     make_loc(bedquilt);
     make_inst(E, 0, complex);
     make_inst(W, 0, cheese);
-    make_inst(S, 80, loop_rmk);
+    make_inst(S, 80, sayit);
     make_inst(SLAB, 0, slab);
-    make_inst(U, 80, loop_rmk);
+    make_inst(U, 80, sayit);
     make_inst(U, 50, abovep);
     make_inst(U, 0, dusty);
-    make_inst(N, 60, loop_rmk);
+    make_inst(N, 60, sayit);
     make_inst(N, 75, low);
     make_inst(N, 0, sjunc);
-    make_inst(D, 80, loop_rmk);
+    make_inst(D, 80, sayit);
     make_inst(D, 0, ante);
 
     make_loc(cheese);
     make_inst(NE, 0, bedquilt);
     make_inst(W, 0, e2pit);
-    make_inst(S, 80, loop_rmk);
+    make_inst(S, 80, sayit);
     make_inst(CANYON, 0, tall);
     make_inst(E, 0, soft);
-    make_inst(NW, 50, loop_rmk);
+    make_inst(NW, 50, sayit);
     make_inst(ORIENTAL, 0, oriental);
 
     make_loc( soft);
@@ -1670,7 +1664,7 @@ int main() {
     make_inst(OVER, not(BRIDGE, 0), sayit);
     make_inst(OVER, 0, troll);
     make_inst(JUMP, not(BRIDGE, 0), lose);
-    make_inst(JUMP, 0, bridge_rmk);
+    make_inst(JUMP, 0, sayit);
 
     make_loc(dead0);
     make_inst(S, 0, cross);
@@ -1726,7 +1720,7 @@ int main() {
     ditto(CROSS);
     ditto(SW);
     make_inst(OVER, 0, troll);
-    make_inst(JUMP, 0, bridge_rmk);
+    make_inst(JUMP, 0, sayit);
     make_inst(FORK, 0, fork);
     make_inst(VIEW, 0, view);
     make_inst(BARREN, 0, fbarr);
@@ -1801,7 +1795,7 @@ int main() {
 
     make_loc( swend);
     make_inst(NE, 0, neend);
-    make_inst(D, 0, grate_rmk);
+    make_inst(D, 0, sayit);
 
     make_loc(crack);
     make_inst(FORCE, 0, spit);
@@ -1845,6 +1839,7 @@ int main() {
         printf("Oops, I'm broken!\n");
         exit(-1);
     }
+    //printf("travels %ld", q - &travels[0]);
 
     new_obj(RUG_, RUG, scan3);
     new_obj(RUG, RUG, scan1);
@@ -2237,7 +2232,7 @@ pre_parse:
                     move(MIRROR_, swend);
                     place[WATER] = limbo;
                     place[OIL] = limbo;
-                    for (j = 1; j <= max_obj; j++)
+                    for (size_t j = 1; j <= max_obj; j++)
                         if (toting(j))
                             destroy(j);
                     closed = true;
