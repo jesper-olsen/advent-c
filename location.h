@@ -15,6 +15,16 @@ typedef enum {
     ppass, pdrop, troll
 } location;
 
+constexpr location max_pirate_loc = dead2;
+constexpr location min_in_cave = inside;
+constexpr location min_lower_loc = emist;
+constexpr location min_forced_loc = crack;  // crack and above are pseudo-locations
+constexpr location max_spec = troll;
+constexpr int REM_SIZE = 15;
+constexpr location message_loc = pony;
+constexpr location chest_loc = dead2;
+constexpr int sayit = max_spec + REM_SIZE;
+
 typedef enum : uint16_t {
     lighted = 1 << 0,
     oil     = 1 << 1,
@@ -671,34 +681,21 @@ const uint16_t flags[max_loc + 1] = {
     [swend] = lighted,
 };
 
-//ROAD2 0
-//#define HILL2 1
-//#define BUILDING2 2
-//#define EAST2 3
-//#define WEST2 3
-//
-//typedef struct connection {
-//    int mot;
-//    int cond;
-//    int dest;
-//} connection;
-//
-//typedef struct location {
-//    const char *long_desc;
-//    const char *short_desc;
-//    const connection *connections;
-//    size_t num_connections;
-//} location2;
-//
-//static const location2 locations[] = {
-//    [ROAD2] = {
-//        .long_desc = "You are standing at the end of a road...",
-//        .short_desc = "End of road",
-//        .connections = (const connection[]){
-//            {WEST2, 0, HILL2},
-//            {EAST2, 0, BUILDING2},
-//        },
-//        .num_connections = 2
-//    },
-//};
-//
+char const *const remarks[REM_SIZE] = {
+    [1] = "You don't fit through a two-inch slit!",
+    [2] = "You can't go through a locked steel grate!",
+    [3] = "I respectfully suggest you go across the bridge instead of jumping.",
+    [4] = "There is no way across the fissure.",
+    [5] = "You can't fit this five-foot clam through that little passage!",
+    [6] = "You can't fit this five-foot oyster through that little passage!",
+    [7] = "You have crawled around in some little holes and wound up back in the\n"
+          "main passage.",
+    [8] = "You have crawled around in some little holes and found your way\n"
+          "blocked by a recent cave-in.  You are now back in the main passage.",
+    [9] = "It is too far up for you to reach.",
+    [10] = "The door is extremely rusty and refuses to open.",
+    [11] = "The dragon looks rather nasty.  You'd best not try to get by.",
+    [12] = "The troll refuses to let you cross.",
+    [13] = "There is no longer any way across the chasm.",
+    [14] = "Don't be ridiculous!",
+};

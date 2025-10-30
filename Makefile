@@ -7,7 +7,7 @@ CFLAGS  := -std=c23 -Wall -Wextra -Wno-switch-enum -Wno-deprecated-non-prototype
 ASTYLE  := astyle --suffix=none --align-pointer=name --pad-oper
 
 SRC     := advent.c
-HEADER  := object.h location.h
+HEADER  := object.h location.h travels.h
 TARGET  := advent
 
 all: $(TARGET)
