@@ -1029,11 +1029,11 @@ move_chest:
                                     } else if (tally == lost_treasures + 1 && k == 0 &&
                                                pirate_not_spotted && prop[LAMP] && here(LAMP)) {
                                         printf(
-                                            "There are faint rustling noises from the darkness behind you.  As you\n\
-turn toward them, the beam of your lamp falls across a bearded pirate.\n\
-He is carrying a large chest.  \"Shiver me timbers!\" he cries, \"I've\n\
-been spotted!  I'd best hie meself off to the maze to hide me chest!\"\n\
-With that, he vanishes into the gloom.\n");
+                                            "There are faint rustling noises from the darkness behind you.  As you\n"
+                                            "turn toward them, the beam of your lamp falls across a bearded pirate.\n"
+                                            "He is carrying a large chest.  \"Shiver me timbers!\" he cries, \"I've\n"
+                                            "been spotted!  I'd best hie meself off to the maze to hide me chest!\"\n"
+                                            "With that, he vanishes into the gloom.\n");
                                         goto move_chest;
                                     } else if (odloc[0] != dloc[0] && pct(20))
                                         printf("There are faint rustling noises from the darkness "
