@@ -5,6 +5,7 @@
 #include <time.h>
 #include "location.h"
 #include "object.h"
+#include "vocab.h"
 
 typedef enum {
     N, S, E, W, NE, SE, NW, SW, U, D, L, R, IN, OUT, FORWARD, BACK, OVER, ACROSS,
@@ -52,7 +53,7 @@ constexpr int HASH_PRIME = 1009;
 constexpr int MAX_SCORE = 350;
 constexpr int HIGHEST_CLASS = 8;
 
-typedef enum {
+typedef enum : unsigned char {
     no_type,
     motion_type,
     object_type,
@@ -62,7 +63,7 @@ typedef enum {
 
 typedef struct {
     char text[6];
-    char word_type;
+    unsigned char word_type;
     unsigned char meaning;
 } hash_entry;
 
@@ -185,7 +186,6 @@ char const *const default_msg[] = {
 };
 
 hash_entry hash_table[HASH_PRIME];
-wordtype current_type;
 
 int visits[max_loc + 1]; // how often have you been here?
 
@@ -352,7 +352,7 @@ static inline bool streq(const char *a, const char *b) {
     return strncmp(a, b, 5) == 0;
 }
 
-void new_word(const char *word, int meaning) {
+void new_word(const char *word, int meaning, signed char word_type) {
     // rolling polynomial hash
     int hash = 0;
     for (const char *p = word; *p; p++)
@@ -366,7 +366,7 @@ void new_word(const char *word, int meaning) {
             hash = 0;
     }
     strcpy(hash_table[hash].text, word);
-    hash_table[hash].word_type = current_type;
+    hash_table[hash].word_type = word_type;
     hash_table[hash].meaning = meaning;
 }
 
@@ -574,295 +574,9 @@ int main() {
     offer(0);
     limit = (hinted[0] ? 1000 : 330);
 
-    current_type = motion_type;
-    new_word("north", N);
-    new_word("n", N);
-    new_word("south", S);
-    new_word("s", S);
-    new_word("east", E);
-    new_word("e", E);
-    new_word("west", W);
-    new_word("w", W);
-    new_word("ne", NE);
-    new_word("se", SE);
-    new_word("nw", NW);
-    new_word("sw", SW);
-    new_word("upwar", U);
-    new_word("up", U);
-    new_word("u", U);
-    new_word("above", U);
-    new_word("ascen", U);
-    new_word("downw", D);
-    new_word("down", D);
-    new_word("d", D);
-    new_word("desce", D);
-    new_word("left", L);
-    new_word("right", R);
-    new_word("inwar", IN);
-    new_word("insid", IN);
-    new_word("in", IN);
-    new_word("out", OUT);
-    new_word("outsi", OUT);
-    new_word("exit", OUT);
-    new_word("leave", OUT);
-    new_word("forwa", FORWARD);
-    new_word("conti", FORWARD);
-    new_word("onwar", FORWARD);
-    new_word("back", BACK);
-    new_word("retur", BACK);
-    new_word("retre", BACK);
-    new_word("over", OVER);
-    new_word("acros", ACROSS);
-    new_word("upstr", UPSTREAM);
-    new_word("downs", DOWNSTREAM);
-    new_word("enter", ENTER);
-    new_word("crawl", CRAWL);
-    new_word("jump", JUMP);
-    new_word("climb", CLIMB);
-    new_word("look", LOOK);
-    new_word("exami", LOOK);
-    new_word("touch", LOOK);
-    new_word("descr", LOOK);
-    new_word("cross", CROSS);
-    new_word("road", ROAD);
-    new_word("hill", ROAD);
-    new_word("fores", WOODS);
-    new_word("valle", VALLEY);
-    new_word("build", HOUSE);
-    new_word("house", HOUSE);
-    new_word("gully", GULLY);
-    new_word("strea", STREAM);
-    new_word("depre", DEPRESSION);
-    new_word("entra", ENTRANCE);
-    new_word("cave", CAVE);
-    new_word("rock", ROCK);
-    new_word("slab", SLAB);
-    new_word("slabr", SLAB);
-    new_word("bed", BED);
-    new_word("passa", PASSAGE);
-    new_word("tunne", PASSAGE);
-    new_word("caver", CAVERN);
-    new_word("canyo", CANYON);
-    new_word("awkwa", AWKWARD);
-    new_word("secre", SECRET);
-    new_word("bedqu", BEDQUILT);
-    new_word("reser", RESERVOIR);
-    new_word("giant", GIANT);
-    new_word("orien", ORIENTAL);
-    new_word("shell", SHELL);
-    new_word("barre", BARREN);
-    new_word("broke", BROKEN);
-    new_word("debri", DEBRIS);
-    new_word("view", VIEW);
-    new_word("fork", FORK);
-    new_word("pit", PIT);
-    new_word("slit", SLIT);
-    new_word("crack", CRACK);
-    new_word("dome", DOME);
-    new_word("hole", HOLE);
-    new_word("wall", WALL);
-    new_word("hall", HALL);
-    new_word("room", ROOM);
-    new_word("floor", FLOOR);
-    new_word("stair", STAIRS);
-    new_word("steps", STEPS);
-    new_word("cobbl", COBBLES);
-    new_word("surfa", SURFACE);
-    new_word("dark", DARK);
-    new_word("low", LOW);
-    new_word("outdo", OUTDOORS);
-    new_word("y2", Y2);
-    new_word("xyzzy", XYZZY);
-    new_word("plugh", PLUGH);
-    new_word("plove", PLOVER);
-    new_word("main", OFFICE);
-    new_word("offic", OFFICE);
-    new_word("null", NOWHERE);
-    new_word("nowhe", NOWHERE);
-
-    current_type = object_type;
-    new_word("key", KEYS);
-    new_word("keys", KEYS);
-    new_word("lamp", LAMP);
-    new_word("lante", LAMP);
-    new_word("headl", LAMP);
-    new_word("grate", GRATE);
-    new_word("cage", CAGE);
-    new_word("rod", ROD);
-    new_word("bird", BIRD);
-    new_word("door", DOOR);
-    new_word("pillo", PILLOW);
-    new_word("velve", PILLOW);
-    new_word("snake", SNAKE);
-    new_word("fissu", CRYSTAL);
-    new_word("table", TABLET);
-    new_word("clam", CLAM);
-    new_word("oyste", OYSTER);
-    new_word("magaz", MAG);
-    new_word("issue", MAG);
-    new_word("spelu", MAG);
-    new_word("\"spel", MAG);
-    new_word("dwarf", DWARF);
-    new_word("dwarv", DWARF);
-    new_word("knife", KNIFE);
-    new_word("knive", KNIFE);
-    new_word("food", FOOD);
-    new_word("ratio", FOOD);
-    new_word("bottl", BOTTLE);
-    new_word("jar", BOTTLE);
-    new_word("water", WATER);
-    new_word("h2o", WATER);
-    new_word("oil", OIL);
-    new_word("mirro", MIRROR);
-    new_word("plant", PLANT);
-    new_word("beans", PLANT);
-    new_word("stala", STALACTITE);
-    new_word("shado", SHADOW);
-    new_word("figur", SHADOW);
-    new_word("axe", AXE);
-    new_word("drawi", ART);
-    new_word("pirat", PIRATE);
-    new_word("drago", DRAGON);
-    new_word("chasm", BRIDGE);
-    new_word("troll", TROLL);
-    new_word("bear", BEAR);
-    new_word("messa", MESSAGE);
-    new_word("volca", GEYSER);
-    new_word("geyse", GEYSER);
-    new_word("vendi", PONY);
-    new_word("machi", PONY);
-    new_word("batte", BATTERIES);
-    new_word("moss", MOSS);
-    new_word("carpe", MOSS);
-    new_word("gold", GOLD);
-    new_word("nugge", GOLD);
-    new_word("diamo", DIAMONDS);
-    new_word("silve", SILVER);
-    new_word("bars", SILVER);
-    new_word("jewel", JEWELS);
-    new_word("coins", COINS);
-    new_word("chest", CHEST);
-    new_word("box", CHEST);
-    new_word("treas", CHEST);
-    new_word("eggs", EGGS);
-    new_word("egg", EGGS);
-    new_word("nest", EGGS);
-    new_word("tride", TRIDENT);
-    new_word("ming", VASE);
-    new_word("vase", VASE);
-    new_word("shard", VASE);
-    new_word("potte", VASE);
-    new_word("emera", EMERALD);
-    new_word("plati", PYRAMID);
-    new_word("pyram", PYRAMID);
-    new_word("pearl", PEARL);
-    new_word("persi", RUG);
-    new_word("rug", RUG);
-    new_word("spice", SPICES);
-    new_word("chain", CHAIN);
-
-    current_type = action_type;
-    new_word("take", TAKE);
-    new_word("carry", TAKE);
-    new_word("keep", TAKE);
-    new_word("catch", TAKE);
-    new_word("captu", TAKE);
-    new_word("steal", TAKE);
-    new_word("get", TAKE);
-    new_word("tote", TAKE);
-    new_word("drop", DROP);
-    new_word("relea", DROP);
-    new_word("free", DROP);
-    new_word("disca", DROP);
-    new_word("dump", DROP);
-    new_word("open", OPEN);
-    new_word("unloc", OPEN);
-    new_word("close", CLOSE);
-    new_word("lock", CLOSE);
-    new_word("light", ON);
-    new_word("on", ON);
-    new_word("extin", OFF);
-    new_word("off", OFF);
-    new_word("wave", WAVE);
-    new_word("shake", WAVE);
-    new_word("swing", WAVE);
-    new_word("calm", CALM);
-    new_word("placa", CALM);
-    new_word("tame", CALM);
-    new_word("walk", GO);
-    new_word("run", GO);
-    new_word("trave", GO);
-    new_word("go", GO);
-    new_word("proce", GO);
-    new_word("explo", GO);
-    new_word("goto", GO);
-    new_word("follo", GO);
-    new_word("turn", GO);
-    new_word("nothi", RELAX);
-    new_word("pour", POUR);
-    new_word("eat", EAT);
-    new_word("devou", EAT);
-    new_word("drink", DRINK);
-    new_word("rub", RUB);
-    new_word("throw", TOSS);
-    new_word("toss", TOSS);
-    new_word("wake", WAKE);
-    new_word("distu", WAKE);
-    new_word("feed", FEED);
-    new_word("fill", FILL);
-    new_word("break", BREAK);
-    new_word("smash", BREAK);
-    new_word("shatt", BREAK);
-    new_word("blast", BLAST);
-    new_word("deton", BLAST);
-    new_word("ignit", BLAST);
-    new_word("blowu", BLAST);
-    new_word("attac", KILL);
-    new_word("kill", KILL);
-    new_word("fight", KILL);
-    new_word("hit", KILL);
-    new_word("strik", KILL);
-    new_word("slay", KILL);
-    new_word("say", SAY);
-    new_word("chant", SAY);
-    new_word("sing", SAY);
-    new_word("utter", SAY);
-    new_word("mumbl", SAY);
-    new_word("read", READ);
-    new_word("perus", READ);
-    new_word("fee", FEEFIE);
-    new_word("fie", FEEFIE);
-    new_word("foe", FEEFIE);
-    new_word("foo", FEEFIE);
-    new_word("fum", FEEFIE);
-    new_word("brief", BRIEF);
-    new_word("find", FIND);
-    new_word("where", FIND);
-    new_word("inven", INVENTORY);
-    new_word("score", SCORE);
-    new_word("quit", QUIT);
-
-    current_type = message_type;
-    new_word("abra", MAGIC);
-    new_word("abrac", MAGIC);
-    new_word("opens", MAGIC);
-    new_word("sesam", MAGIC);
-    new_word("shaza", MAGIC);
-    new_word("hocus", MAGIC);
-    new_word("pocus", MAGIC);
-    new_word("help", HELP);
-    new_word("?", HELP);
-    new_word("tree", TREE);
-    new_word("trees", TREE);
-    new_word("dig", DIG);
-    new_word("excav", DIG);
-    new_word("lost", LOST);
-    new_word("mist", MIST);
-    new_word("fuck", FUCK);
-    new_word("stop", STOP);
-    new_word("info", INFO);
-    new_word("infor", INFO);
-    new_word("swim", SWIM);
+    for (size_t i = 0; i < VOCAB_SIZE; i++) {
+        new_word(vocab[i].text, vocab[i].meaning, vocab[i].word_type);
+    }
 
     new_obj(RUG_, RUG, scan3);
     new_obj(RUG, RUG, scan1);

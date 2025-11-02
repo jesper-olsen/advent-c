@@ -3,11 +3,10 @@
 CC      := clang
 CFLAGS  := -std=c23 -Wall -Wextra -Wno-switch-enum -Wno-deprecated-non-prototype -O2
 
-#ASTYLE  := astyle --suffix=none
 ASTYLE  := astyle --suffix=none --align-pointer=name --pad-oper
 
 SRC     := advent.c
-HEADER  := object.h location.h travels.h
+HEADER  := object.h location.h travels.h vocab.h
 TARGET  := advent
 
 all: $(TARGET)
