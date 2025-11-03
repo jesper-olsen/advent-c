@@ -25,7 +25,7 @@ fmt:
 	$(ASTYLE) $(SRC) $(HEADER)
 
 clean:
-	rm -f $(TARGET) *.o
+	rm -f $(TARGET) *.o generator
 
 .PHONY: all run clean fmt
 

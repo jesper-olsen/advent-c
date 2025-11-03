@@ -1,17 +1,43 @@
-## Advent - Colossal Cave Adventure (C Version)
+# Advent - A Modern C Port of Colossal Cave Adventure 
 
-This repo is based on Donald Knuth's C implementation of [Advent](https://www-cs-faculty.stanford.edu/~knuth/programs/advent.w.gz), the classic Colossal Cave Adventure. It has been updated for modern C (C23) and lightly refactored for readability and maintainability.
+This repo contains a modernised C version of Donald Knuth's implementation of the classic Colossal Cave Adventure ([Advent](https://www-cs-faculty.stanford.edu/~knuth/programs/advent.w.gz)). The original CWEB source has been translated and refactored using standard C23.
 
 See also the [Rust](https://github.com/jesper-olsen/advent) port of the same program.
 
+## Project Goals
+
+* Modernisation: Update the codebase to use standard C (C23) and eliminate deprecated or non-standard patterns.
+* Readability: Refactor the code into logical modules and improve formatting to make it easier to study and understand.
+* Performance: Optimise critical paths, such as the command parser, using modern techniques.
+* Faithfulness: Keep the game logic, room descriptions, and text identical to the original, preserving the classic experience.
+
+## Technical Highlights
+
+The primary technical philosophy of this port is to shift work from runtime to compile time, resulting in a faster, safer, and more robust executable. This was applied to the two most critical data structures in the game: the command vocabulary and the location data.
+
+* Compile-Time Command Parser: The original game built a hash table in memory every time it started. This version replaces that with a compile-time perfect hash function.
+   *  A custom generator program (`generator.c`) encodes the vocabulary's 5-letter words into unique 35-bit integers.
+   * These integers are used as `case` labels in a massive, auto-generated C switch statement (`vocab_jmp.h`), creating an O(1) lookup with zero startup cost and zero dynamic memory allocation.
+* Static Game Data Initialization: In the original, all static game data—including the long and short room descriptions—was loaded via dynamic initialization routines at startup. This has been completely replaced with const static arrays.
+   * Increased Safety: This change places all game text into the read-only `.rodata` memory segment, protecting it from potential runtime corruption or buffer overflows.
+   * Instant Startup: The data is part of the executable image and requires no setup, further reducing the time from launch to the first prompt.
+
 ## Build
+
+Prerequisites:
+
+* A C compiler supporting C23 (e.g., Clang17+ or GCC 13+).
+* `make`
+
+Build the game: 
 
 ```bash
 make 
 ```
 
-This uses Clang with -std=c23 and common warning flags.
-You can adjust the compiler or options in the provided Makefile.
+This will first build a small generator tool, use it to create vocab_jmp.h, and then compile the main 
+`advent` executable.
+
 
 ## Run
 
@@ -42,8 +68,3 @@ Around you is a forest.  A small stream flows out of the building and
 down a gully.
 *
 ```
-
-## Notes
-
-* Written in standard C23 and compatible with Clang 17+.
-* Game logic and text remain faithful to the original.
