@@ -1,3 +1,12 @@
+typedef enum : unsigned char {
+    no_type,
+    motion_type,
+    object_type,
+    action_type,
+    message_type
+} wordtype;
+
+
 typedef struct {
     const char *text;
     unsigned char meaning;
@@ -290,4 +299,39 @@ const Word vocab[] = {
 };
 
 #define VOCAB_SIZE (sizeof(vocab)/sizeof(Word))
+
+/**
+ * Encodes a short, 5-character NUL-terminated string into a unique
+ * 64-bit integer by packing the 7-bit ASCII value of each character.
+ */
+static uint64_t encode_word(const char* word) {
+    uint64_t r = 0;
+    for (size_t i = 0; i < 5 && word[i] != '\0'; i++) {
+        r = (r << 7) | word[i];
+    }
+    return r;
+}
+
+int lookup(const char* word) {
+    uint64_t r = encode_word(word);
+    int i;
+    switch (r) {
+#include "vocab_jmp.h"
+    default:
+        i = -1;
+    }
+    if (i != -1 && strncmp(vocab[i].text, word, 5) != 0) {
+        i = -1; // collision - word not in vocab
+    }
+    return i;
+}
+
+void generate_jmp_table() {
+    for (size_t i = 0; i < VOCAB_SIZE; i++) {
+        uint64_t r = encode_word(vocab[i].text);
+        printf("case %llu: i=%zu; break;\n", r, i);
+    }
+}
+
+
 

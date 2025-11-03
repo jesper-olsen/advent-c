@@ -6,13 +6,16 @@ CFLAGS  := -std=c23 -Wall -Wextra -Wno-switch-enum -Wno-deprecated-non-prototype
 ASTYLE  := astyle --suffix=none --align-pointer=name --pad-oper
 
 SRC     := advent.c
-HEADER  := object.h location.h travels.h vocab.h
+HEADER  := object.h location.h travels.h vocab.h vocab_jmp.h
 TARGET  := advent
 
 all: $(TARGET)
 
 $(TARGET): $(SRC) $(HEADER)
 	$(CC) $(CFLAGS) -o $(TARGET) $(SRC)
+
+vocab_jmp.h: generator
+	./generator > vocab_jmp.h
 
 run: $(TARGET)
 	./$(TARGET)

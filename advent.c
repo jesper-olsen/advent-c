@@ -19,7 +19,6 @@ typedef enum {
 
 #include "travels.h"
 
-constexpr int HASH_PRIME = 1009;
 #define forced_move(loc) (loc >= min_forced_loc)
 #define water_here ((flags[loc] & (liquid + oil)) == liquid)
 #define oil_here ((flags[loc] & (liquid + oil)) == liquid + oil)
@@ -52,20 +51,6 @@ constexpr int HASH_PRIME = 1009;
 #define closing (clock1 < 0)
 constexpr int MAX_SCORE = 350;
 constexpr int HIGHEST_CLASS = 8;
-
-typedef enum : unsigned char {
-    no_type,
-    motion_type,
-    object_type,
-    action_type,
-    message_type
-} wordtype;
-
-typedef struct {
-    char text[6];
-    unsigned char word_type;
-    unsigned char meaning;
-} hash_entry;
 
 typedef enum {
     ABSTAIN, TAKE, DROP, OPEN, CLOSE, ON, OFF, WAVE, CALM, GO, RELAX, POUR, EAT, DRINK, RUB,
@@ -185,8 +170,6 @@ char const *const default_msg[] = {
     [QUIT] = "Eh?",
 };
 
-hash_entry hash_table[HASH_PRIME];
-
 int visits[max_loc + 1]; // how often have you been here?
 
 object first[max_loc + 1];  // first object present at a location
@@ -217,7 +200,7 @@ action verb;
 action oldverb;
 object obj;
 object oldobj;
-wordtype command_type;
+
 int turns;
 int west_count;
 bool was_dark;
@@ -350,44 +333,6 @@ char const *const CLASS_MESSAGE[] = {
 
 static inline bool streq(const char *a, const char *b) {
     return strncmp(a, b, 5) == 0;
-}
-
-void new_word(const char *word, int meaning, signed char word_type) {
-    // rolling polynomial hash
-    int hash = 0;
-    for (const char *p = word; *p; p++)
-        hash = *p + hash + hash;
-    hash %= HASH_PRIME;
-
-    // linear probing
-    while (hash_table[hash].word_type) {
-        hash++;
-        if (hash == HASH_PRIME)
-            hash = 0;
-    }
-    strcpy(hash_table[hash].text, word);
-    hash_table[hash].word_type = word_type;
-    hash_table[hash].meaning = meaning;
-}
-
-int lookup(char *w) {
-    int hash = 0;
-    char t = w[5];
-    w[5] = '\0';
-    for (char *p = w; *p; p++)
-        hash = *p + hash + hash;
-    hash %= HASH_PRIME;
-    w[5] = t;
-    if (hash < 0)
-        return -1;
-    while (hash_table[hash].word_type) {
-        if (streq(w, hash_table[hash].text))
-            return hash;
-        hash++;
-        if (hash == HASH_PRIME)
-            hash = 0;
-    }
-    return -1;
 }
 
 void drop(object t, location l) {
@@ -573,10 +518,6 @@ int main() {
 
     offer(0);
     limit = (hinted[0] ? 1000 : 330);
-
-    for (size_t i = 0; i < VOCAB_SIZE; i++) {
-        new_word(vocab[i].text, vocab[i].meaning, vocab[i].word_type);
-    }
 
     new_obj(RUG_, RUG, scan3);
     new_obj(RUG, RUG, scan1);
@@ -1025,7 +966,7 @@ pre_parse:
 
             if ((streq(word1, "water") || streq(word1, "oil")) &&
                     (streq(word2, "plant") || streq(word2, "door")) &&
-                    (loc == place[hash_table[lookup(word2)].meaning]))
+                    (loc == place[vocab[lookup(word2)].meaning]))
                 strcpy(word2, "pour");
 
 parse:
@@ -1036,16 +977,15 @@ parse:
 
             k = lookup(word1);
             if (k < 0) {
-                printf("Sorry, I don't know the word \"%s\".\n", word1);
+                printf("xSorry, I don't know the word \"%s\".\n", word1);
                 goto cycle;
             }
 branch:
-            command_type = hash_table[k].word_type;
-            switch (command_type) {
+            switch (vocab[k].word_type) {
             case motion_type:
-                try_motion(hash_table[k].meaning);
+                try_motion(vocab[k].meaning);
             case object_type:
-                obj = hash_table[k].meaning;
+                obj = vocab[k].meaning;
                 if (!toting(obj) && !is_at_loc(obj))
                     switch (obj) {
                     case GRATE:
@@ -1103,7 +1043,7 @@ branch:
                 printf("What do you want to do with the %s?\n", word1);
                 goto cycle;
             case action_type:
-                verb = hash_table[k].meaning;
+                verb = vocab[k].meaning;
                 if (verb == SAY)
                     obj = *word2;
                 else if (*word2)
@@ -1258,9 +1198,9 @@ transitive:
                 if (*word2)
                     strcpy(word1, word2);
                 k = lookup(word1);
-                switch (hash_table[k].meaning) {
+                switch (vocab[k].meaning) {
                 case FEEFIE:
-                    if (hash_table[k].word_type != action_type)
+                    if (vocab[k].word_type != action_type)
                         break;
                 case XYZZY:
                 case PLUGH:
@@ -1871,7 +1811,7 @@ cry:
                 goto report_default;
             }
 speakit:
-            report(message[hash_table[k].meaning]);
+            report(message[vocab[k].meaning]);
 report_default:
             if (default_msg[verb])
                 report(default_msg[verb]) else continue;
