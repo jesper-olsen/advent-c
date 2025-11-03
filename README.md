@@ -13,12 +13,12 @@ See also the [Rust](https://github.com/jesper-olsen/advent) port of the same pro
 
 ## Technical Highlights
 
-The primary technical philosophy of this port is to shift work from runtime to compile time, resulting in a faster, safer, and more robust executable. This was applied to the two most critical data structures in the game: the command vocabulary and the location data.
+The primary technical philosophy of this port is to shift work from runtime to compile time, resulting in a faster, safer, and more robust executable. This was applied to the two most critical data structures in the game: the command vocabulary and the location and object data.
 
 * Compile-Time Command Parser: The original game built a hash table in memory every time it started. This version replaces that with a compile-time perfect hash function.
    *  A custom generator program (`generator.c`) encodes the vocabulary's 5-letter words into unique 35-bit integers.
    * These integers are used as `case` labels in a massive, auto-generated C switch statement (`vocab_jmp.h`), creating an O(1) lookup with zero startup cost and zero dynamic memory allocation.
-* Static Game Data Initialization: In the original, all static game data—including the long and short room descriptions—was loaded via dynamic initialization routines at startup. This has been completely replaced with const static arrays.
+* Static Game Data Initialization: In the original, all static game data - including the long and short room descriptions - was loaded via dynamic initialization routines at startup. This has been replaced with const static arrays.
    * Increased Safety: This change places all game text into the read-only `.rodata` memory segment, protecting it from potential runtime corruption or buffer overflows.
    * Instant Startup: The data is part of the executable image and requires no setup, further reducing the time from launch to the first prompt.
 
