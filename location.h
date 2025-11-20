@@ -300,8 +300,8 @@ passage 6 feet off the floor.",
         [1] = "You're in Shell Room."
     },
     [arch] = {
-        [0] = "You are in an arched hall.  A coral passage once continued up and east\n\
-from here, but is now blocked by debris.  The air smells of sea water.",
+        [0] = "You are in an arched hall.  A coral passage once continued up and east\n"
+              "from here, but is now blocked by debris.  The air smells of sea water.",
         [1] = "You're in arched hall.",
     },
     [ragged] = { [0] = "You are in a long sloping corridor with ragged sharp walls." },
@@ -427,8 +427,8 @@ from here, but is now blocked by debris.  The air smells of sea water.",
         [1] = "You're in alcove.",
     },
     [proom] = {
-        [0] = "You're in a small chamber lit by an eerie green light.  An extremely\n\
-narrow tunnel exits to the west.  A dark corridor leads NE.",
+        [0] = "You're in a small chamber lit by an eerie green light.  An extremely\n"
+              "narrow tunnel exits to the west.  A dark corridor leads NE.",
         [1] = "You're in Plover Room.",
     },
     [droom] = {
